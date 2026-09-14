@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我 | Android Framework Blog</title>
+    <meta name="description" content="Android 系统开发工程师，专注稳定性与性能优化">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="matrix-bg" id="matrixBg"></div>
+    
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="brand-icon">&lt;/&gt;</span>
+            <span class="brand-text">Framework<span class="highlight">.dev</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">首页</a>
+            <a href="tags.html">标签</a>
+            <a href="about.html" class="active">关于</a>
+            <button class="theme-toggle" id="themeToggle" title="切换主题">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+        <button class="menu-toggle" id="menuToggle">☰</button>
+    </nav>
+
+    <main class="container">
+        <section class="about-hero">
+            <div class="about-avatar">
+                <div class="avatar-ring large"></div>
+                <div class="avatar-inner large">FW</div>
+            </div>
+            <h1 class="about-name">Framework Engineer</h1>
+            <p class="about-title">Android 系统开发工程师 · 稳定性 & 性能专家</p>
+            
+            <div class="about-social">
+                <a href="https://github.com" target="_blank" class="social-link" title="GitHub">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                </a>
+                <a href="mailto:your@email.com" class="social-link" title="Email">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                </a>
+                <a href="rss.xml" target="_blank" class="social-link" title="RSS">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M6.18 15.64a2.18 2.18 0 012.18 2.18C8.36 19.33 7.38 20.36 6 20.36c-1.38 0-2.36-1.03-2.36-2.54 0-1.38 1.03-2.36 2.54-2.36zm-5.45 5.45C.31 17.64 0 14.51 0 11.64S.82 5.45 2.05 3.49C3.28 1.54 5.23 0 7.69 0c2.46 0 4.41 1.54 5.64 3.49 1.23 1.95 2.05 5.08 2.05 7.95 0 2.87-.31 5.13-1.73 7.08-1.43 1.95-3.38 3.49-5.84 3.49-2.46 0-4.41-1.54-5.64-3.49zm4.1-9.74c-1.38 0-2.36 1.03-2.36 2.54 0 1.38 1.03 2.36 2.54 2.36 1.38 0 2.36-1.03 2.36-2.54 0-1.38-1.03-2.36-2.54-2.36z"/></svg>
+                </a>
+            </div>
+        </section>
+
+        <section class="about-content">
+            <div class="about-card">
+                <h2>🎯 专注领域</h2>
+                <div class="skill-grid">
+                    <div class="skill-item">
+                        <div class="skill-icon">🛡️</div>
+                        <h3>系统稳定性</h3>
+                        <p>ANR / Crash / Watchdog / Tombstone 分析，系统级异常监控与防护机制设计</p>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon">🏗️</div>
+                        <h3>Framework 源码</h3>
+                        <p>AMS / WMS / Input / Binder 机制深度分析，系统服务定制与优化</p>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon">⚡</div>
+                        <h3>性能优化</h3>
+                        <p>启动速度 / 内存优化 / 卡顿治理 / Systrace / Perfetto 深度剖析</p>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon">🔧</div>
+                        <h3>系统定制</h3>
+                        <p>AOSP 编译 / 系统裁剪 / ROM 开发 / 车载/IoT 系统适配</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-card">
+                <h2>🛠️ 技术栈</h2>
+                <div class="tech-stack">
+                    <span class="tech-tag expert">Android Framework</span>
+                    <span class="tech-tag expert">Java</span>
+                    <span class="tech-tag expert">C/C++</span>
+                    <span class="tech-tag expert">AOSP</span>
+                    <span class="tech-tag proficient">Kotlin</span>
+                    <span class="tech-tag proficient">Binder</span>
+                    <span class="tech-tag proficient">HAL</span>
+                    <span class="tech-tag proficient">Perfetto</span>
+                    <span class="tech-tag familiar">Rust</span>
+                    <span class="tech-tag familiar">Linux Kernel</span>
+                    <span class="tech-tag familiar">LLVM</span>
+                </div>
+            </div>
+
+            <div class="about-card">
+                <h2>📈 经历时间线</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">2023 - 至今</div>
+                            <h3>高级 Android 系统工程师</h3>
+                            <p>负责车载 Android 系统稳定性体系建设，主导 ANR/Crash 监控平台开发，系统服务性能优化</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">2020 - 2023</div>
+                            <h3>Android Framework 工程师</h3>
+                            <p>深度参与 AOSP 定制，负责 WindowManager / Input 系统优化，ROM 系统裁剪与启动优化</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">2018 - 2020</div>
+                            <h3>Android 应用开发工程师</h3>
+                            <p>大型 App 性能优化，自定义 View / 动画框架开发，组件化架构设计</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Built with pure HTML/CSS/JS · Deploy on GitHub Pages</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+    <title>Android Framework &amp; Stability Blog</title>
+    <link>https://your-blog-url.github.io/</link>
+    <description>专注 Android 系统稳定性、Framework 源码分析与性能优化</description>
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 05 Jun 2026 08:00:00 +0800</lastBuildDate>
+    <atom:link href="https://your-blog-url.github.io/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+        <title>深入解析 ANR Watchdog：从原理到线上防控体系</title>
+        <link>https://your-blog-url.github.io/post.html?id=anr-watchdog-deep-dive</link>
+        <description>ANR 是 Android 稳定性治理中最棘手的问题之一。本文深入剖析 ANR Watchdog 的检测原理，分析 Input/Service/Broadcast/ContentProvider 四类 ANR 的触发机制，并分享一套完整的线上 ANR 监控、归因与防控体系。</description>
+        <pubDate>Wed, 28 May 2026 08:00:00 +0800</pubDate>
+        <guid>https://your-blog-url.github.io/post.html?id=anr-watchdog-deep-dive</guid>
+        <category>ANR</category>
+        <category>稳定性</category>
+        <category>Watchdog</category>
+        <category>系统服务</category>
+    </item>
+    
+    <item>
+        <title>Binder DeathRecipient 内存泄漏：从源码到根治方案</title>
+        <link>https://your-blog-url.github.io/post.html?id=binder-death-recipient-memory-leak</link>
+        <description>Binder 的 DeathRecipient 机制是系统服务间通信的生命线，但也是内存泄漏的重灾区。本文通过源码分析揭示泄漏根因，并提供一套基于弱引用 + 生命周期绑定的根治方案。</description>
+        <pubDate>Thu, 15 May 2026 08:00:00 +0800</pubDate>
+        <guid>https://your-blog-url.github.io/post.html?id=binder-death-recipient-memory-leak</guid>
+        <category>Binder</category>
+        <category>内存优化</category>
+        <category>Framework</category>
+        <category>稳定性</category>
+    </item>
+    
+    <item>
+        <title>Perfetto 深度实战：从 Trace 采集到卡顿根因定位</title>
+        <link>https://your-blog-url.github.io/post.html?id=perfetto-systrace-analysis</link>
+        <description>Perfetto 已经全面取代 Systrace 成为 Android 性能分析的标准工具。本文从底层 Ring Buffer 机制讲起，到 UI 线程 / RenderThread / SurfaceFlinger 的全链路 trace 分析方法。</description>
+        <pubDate>Wed, 30 Apr 2026 08:00:00 +0800</pubDate>
+        <guid>https://your-blog-url.github.io/post.html?id=perfetto-systrace-analysis</guid>
+        <category>性能优化</category>
+        <category>Perfetto</category>
+        <category>Systrace</category>
+        <category>卡顿治理</category>
+    </item>
+    
+    <item>
+        <title>AOSP 编译系统深度解析：Soong、Blueprint 与 Ninja</title>
+        <link>https://your-blog-url.github.io/post.html?id=aosp-build-system-guide</link>
+        <description>从 Android.mk 到 Android.bp，从 Make 到 Soong 再到 Ninja，AOSP 的编译系统经历了巨大变革。本文深入分析三者的关系、转换流程与定制方法。</description>
+        <pubDate>Sat, 12 Apr 2026 08:00:00 +0800</pubDate>
+        <guid>https://your-blog-url.github.io/post.html?id=aosp-build-system-guide</guid>
+        <category>AOSP</category>
+        <category>编译系统</category>
+        <category>Soong</category>
+        <category>Android构建</category>
+    </item>
+    
+    <item>
+        <title>WMS 窗口可见性优化：从 addView 到 Surface 释放的全链路</title>
+        <link>https://your-blog-url.github.io/post.html?id=wms-window-visibility-optimization</link>
+        <description>WindowManagerService 管理着系统中所有窗口的生命周期。窗口的创建、显示、隐藏、销毁涉及复杂的跨进程协调，也是内存和性能问题的重灾区。</description>
+        <pubDate>Thu, 20 Mar 2026 08:00:00 +0800</pubDate>
+        <guid>https://your-blog-url.github.io/post.html?id=wms-window-visibility-optimization</guid>
+        <category>WMS</category>
+        <category>性能优化</category>
+        <category>Framework</category>
+        <category>内存优化</category>
+    </item>
+    
+    <item>
+        <title>Input 系统分发机制：从 kernel 到 App 的全链路追踪</title>
+        <link>https://your-blog-url.github.io/post.html?id=input-system-dispatcher-analysis</link>
+        <description>触摸事件从屏幕到 App 的旅程，涉及 kernel、SurfaceFlinger、InputDispatcher、WMS 的复杂协作。本文通过 ftrace 和源码，完整还原这条数据通路。</description>
+        <pubDate>Wed, 05 Mar 2026 08:00:00 +0800</pubDate>
+        <guid>https://your-blog-url.github.io/post.html?id=input-system-dispatcher-analysis</guid>
+        <category>Input</category>
+        <category>Framework</category>
+        <category>ANR</category>
+        <category>稳定性</category>
+    </item>
+</channel>
+</rss>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Framework & Stability | 技术博客</title>
+    <meta name="description" content="专注 Android 系统稳定性、Framework 源码分析与性能优化">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/vendor/prism-tomorrow.min.css">
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
+</head>
+<body>
+    <div class="matrix-bg" id="matrixBg"></div>
+    
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="brand-icon">&lt;/&gt;</span>
+            <span class="brand-text">Framework<span class="highlight">.dev</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="active">首页</a>
+            <a href="tags.html">标签</a>
+            <a href="about.html">关于</a>
+            <button class="theme-toggle" id="themeToggle" title="切换主题">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+        <button class="menu-toggle" id="menuToggle">☰</button>
+    </nav>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-avatar">
+                    <div class="avatar-ring"></div>
+                    <div class="avatar-inner">FW</div>
+                </div>
+                <h1 class="hero-title">
+                    <span class="typewriter" id="typewriter"></span>
+                    <span class="cursor">|</span>
+                </h1>
+                <p class="hero-desc">
+                    深耕 Android 系统层，专注 <span class="tag-pill">稳定性</span> 
+                    <span class="tag-pill">Framework</span> 
+                    <span class="tag-pill">性能优化</span>
+                </p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-num" id="postCount">0</span>
+                        <span class="stat-label">篇文章</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num" id="tagCount">0</span>
+                        <span class="stat-label">个标签</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search -->
+        <section class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索文章标题、标签..." autocomplete="off">
+                <button class="search-btn">🔍</button>
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </section>
+
+        <!-- Tags Cloud -->
+        <section class="tags-cloud">
+            <h2 class="section-title">
+                <span class="section-icon">#</span>
+                热门标签
+            </h2>
+            <div class="tags-list" id="tagsCloud"></div>
+        </section>
+
+        <!-- Posts List -->
+        <section class="posts-section">
+            <h2 class="section-title">
+                <span class="section-icon">📚</span>
+                最新文章
+            </h2>
+            <div class="posts-grid" id="postsList"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Built with pure HTML/CSS/JS · Deploy on GitHub Pages</p>
+            <p>
+                <a href="rss.xml" target="_blank">RSS</a> ·
+                <a href="https://github.com" target="_blank">GitHub</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="js/vendor/prism.min.js"></script>
+    <script src="js/vendor/prism-java.min.js"></script>
+    <script src="js/vendor/prism-kotlin.min.js"></script>
+    <script src="js/vendor/prism-bash.min.js"></script>
+    <script src="js/vendor/prism-c.min.js"></script>
+    <script src="js/posts.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

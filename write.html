@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章编辑器 | Android Framework Blog</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ========== 编辑器专属样式 ========== */
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 900px) {
+            .editor-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .editor-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+        
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .panel-title-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .mode-switch {
+            display: flex;
+            gap: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+        
+        .mode-btn {
+            padding: 6px 14px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .mode-btn.active {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+            font-family: var(--font-body);
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            font-family: var(--font-mono);
+            line-height: 1.6;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 标签输入 */
+        .tag-input-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            min-height: 48px;
+            align-items: center;
+        }
+        
+        .tag-input-wrapper:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+        
+        .tag-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .tag-chip .remove {
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .tag-chip .remove:hover {
+            opacity: 1;
+        }
+        
+        .tag-input {
+            flex: 1;
+            min-width: 100px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+            padding: 4px;
+        }
+        
+        .tag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        
+        .tag-suggestion {
+            padding: 4px 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .tag-suggestion:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        /* 预览面板 */
+        .preview-panel .post-article {
+            padding: 24px;
+        }
+        
+        .preview-panel .post-header h1 {
+            font-size: 1.4rem;
+        }
+        
+        .output-panel {
+            margin-top: 20px;
+            grid-column: 1 / -1;
+        }
+        
+        .code-output {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            max-height: 400px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .btn-success {
+            background: #00d4aa22;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+        
+        .btn-danger {
+            background: #ff475722;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+        
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.85rem;
+        }
+        
+        /* Markdown 工具栏 */
+        .toolbar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            padding: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+        }
+        
+        .toolbar-btn {
+            padding: 6px 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font-mono);
+        }
+        
+        .toolbar-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .toolbar-sep {
+            width: 1px;
+            background: var(--border-color);
+            margin: 0 4px;
+        }
+        
+        /* 图片上传区域 */
+        .image-upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius);
+            padding: 30px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        
+        .image-upload-zone:hover,
+        .image-upload-zone.drag-over {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+        
+        .image-upload-zone .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            opacity: 0.6;
+        }
+        
+        .image-upload-zone .upload-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .image-upload-zone .upload-hint {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+        
+        .image-upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* 图片列表 */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .image-item {
+            position: relative;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            aspect-ratio: 16 / 10;
+        }
+        
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-item .image-actions {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .image-item:hover .image-actions {
+            opacity: 1;
+        }
+        
+        .image-item .image-action-btn {
+            width: 28px;
+            height: 28px;
+            background: rgba(0,0,0,0.7);
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-item .image-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 4px 8px;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* ========== 文章排序列表 ========== */
+        .post-sort-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .sort-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            cursor: grab;
+            transition: var(--transition);
+            user-select: none;
+        }
+        
+        .sort-item:hover {
+            border-color: var(--accent-glow);
+        }
+        
+        .sort-item.dragging {
+            opacity: 0.5;
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            cursor: grabbing;
+        }
+        
+        .sort-item.drag-over {
+            border-top: 3px solid var(--accent);
+        }
+        
+        .sort-handle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: grab;
+        }
+        
+        .sort-num {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-dim);
+            color: var(--accent);
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            flex-shrink: 0;
+        }
+        
+        .sort-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .sort-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .sort-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        .sort-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        
+        .sort-actions button {
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+        
+        .sort-actions .btn-edit {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+        
+        .sort-actions .btn-edit:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+        
+        .sort-actions .btn-del {
+            background: #ff475722;
+            color: var(--danger);
+        }
+        
+        .sort-actions .btn-del:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 24px;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .existing-posts {
+            margin-bottom: 20px;
+        }
+        
+        .existing-posts select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        
+        .word-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+        
+        .insert-position {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--accent);
+        }
+        
+        .image-size-warning {
+            font-size: 0.8rem;
+            color: var(--warning);
+            margin-top: 8px;
+        }
+        
+        /* 输出选项 */
+        .output-options {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .output-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        
+        .output-option:hover {
+            border-color: var(--accent);
+        }
+        
+        .output-option input {
+            accent-color: var(--accent);
+        }
+        
+        .output-option:has(input:checked) {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+        
+        /* ========== 备份管理 ========== */
+        .backup-panel {
+            margin-bottom: 20px;
+        }
+        
+        .backup-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .backup-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+        
+        .backup-item:hover {
+            border-color: var(--accent-glow);
+        }
+        
+        .backup-item .backup-time {
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-family: var(--font-mono);
+            white-space: nowrap;
+        }
+        
+        .backup-item .backup-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .backup-item .backup-title {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .backup-item .backup-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        .backup-item .backup-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        
+        .backup-item .backup-actions button {
+            padding: 5px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+        
+        .backup-item .btn-restore {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+        
+        .backup-item .btn-restore:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+        
+        .backup-item .btn-del-backup {
+            background: #ff475722;
+            color: var(--danger);
+        }
+        
+        .backup-item .btn-del-backup:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+        
+        .backup-item .btn-dl-backup {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+        }
+        
+        .backup-status {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .backup-status .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .auto-save-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .auto-save-toggle input {
+            accent-color: var(--accent);
+        }
+        
+        .restore-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .restore-modal.show {
+            display: flex;
+        }
+        
+        .restore-modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 30px;
+            max-width: 480px;
+            width: 90%;
+        }
+        
+        .restore-modal-content h3 {
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+        
+        .restore-modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .restore-modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg" id="matrixBg"></div>
+    
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="brand-icon">&lt;/&gt;</span>
+            <span class="brand-text">Framework<span class="highlight">.dev</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">首页</a>
+            <a href="tags.html">标签</a>
+            <a href="about.html">关于</a>
+            <a href="write.html" class="active">写作</a>
+            <button class="theme-toggle" id="themeToggle" title="切换主题">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+        <button class="menu-toggle" id="menuToggle">☰</button>
+    </nav>
+
+    <main class="container">
+        <h1 class="page-title">
+            <span class="page-icon">✍️</span>
+            文章编辑器
+        </h1>
+        
+        <!-- ===== 文章管理面板（排序 + 快速编辑） ===== -->
+        <div class="editor-panel" style="margin-bottom:20px;">
+            <div class="panel-title">
+                <span class="panel-title-left">📋 文章管理（拖拽排序 · 点击编辑）</span>
+                <button class="btn btn-sm btn-secondary" onclick="generateAllPostsCode()">📋 生成完整 posts.js</button>
+            </div>
+            <div class="post-sort-list" id="postSortList"></div>
+        </div>
+        
+        <!-- ===== 自动备份管理面板 ===== -->
+        <div class="editor-panel backup-panel">
+            <div class="panel-title">
+                <span class="panel-title-left">💾 自动备份管理</span>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <label class="auto-save-toggle">
+                        <input type="checkbox" id="autoSaveToggle" checked>
+                        <span>自动备份</span>
+                    </label>
+                    <button class="btn btn-sm btn-secondary" onclick="createManualBackup()">➕ 立即备份</button>
+                    <button class="btn btn-sm btn-danger" onclick="clearAllBackups()">🗑️ 清空备份</button>
+                </div>
+            </div>
+            <div class="backup-list" id="backupList"></div>
+            <div class="backup-status" id="backupStatus">
+                <span class="status-dot"></span>
+                <span id="backupStatusText">自动备份已开启，每 30 秒自动保存</span>
+            </div>
+        </div>
+
+        <div class="editor-layout">
+            <!-- 左侧：编辑表单 -->
+            <div class="editor-panel">
+                <div class="panel-title">
+                    <span class="panel-title-left">📝 文章信息</span>
+                    <div class="mode-switch">
+                        <button class="mode-btn active" id="modeMarkdown" onclick="switchMode('markdown')">Markdown</button>
+                        <button class="mode-btn" id="modeHtml" onclick="switchMode('html')">HTML</button>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>文章 ID（URL 标识，英文+连字符）</label>
+                        <input type="text" id="postId" placeholder="例如: anr-watchdog-analysis">
+                    </div>
+                    <div class="form-group">
+                        <label>发布日期</label>
+                        <input type="date" id="postDate">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>文章标题</label>
+                    <input type="text" id="postTitle" placeholder="输入文章标题...">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>阅读时间</label>
+                        <input type="text" id="postReadTime" placeholder="例如: 15 min" value="10 min">
+                    </div>
+                    <div class="form-group">
+                        <label>标签（回车添加，点击推荐快速插入）</label>
+                        <div class="tag-input-wrapper" id="tagWrapper">
+                            <input type="text" class="tag-input" id="tagInput" placeholder="输入标签回车添加">
+                        </div>
+                        <div class="tag-suggestions" id="tagSuggestions"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>文章摘要</label>
+                    <textarea id="postExcerpt" rows="3" placeholder="120字以内的文章摘要，会显示在首页卡片上..."></textarea>
+                    <div class="word-count" id="excerptCount">0 字</div>
+                </div>
+                
+                <!-- 图片上传区域 -->
+                <div class="form-group">
+                    <label>📷 图片管理（拖放、粘贴或点击上传）</label>
+                    <div class="insert-position" id="insertPosition">
+                        💡 点击图片上的「插入」按钮可将图片代码插入到光标位置
+                    </div>
+                    <div class="image-gallery" id="imageGallery"></div>
+                    <div class="image-upload-zone" id="dropZone">
+                        <input type="file" id="imageInput" accept="image/*" multiple>
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">点击选择图片，或拖拽图片到此处</div>
+                        <div class="upload-hint">支持 JPG / PNG / GIF / SVG · 建议单张 &lt; 500KB</div>
+                    </div>
+                    <div class="image-size-warning" id="sizeWarning"></div>
+                </div>
+                
+                <!-- 正文编辑 -->
+                <div class="form-group">
+                    <label>
+                        正文内容
+                        <span id="modeLabel" style="color:var(--accent);font-weight:normal;font-size:0.85rem;">
+                            — 当前为 Markdown 模式
+                        </span>
+                    </label>
+                    
+                    <!-- Markdown 工具栏 -->
+                    <div class="toolbar" id="mdToolbar">
+                        <button class="toolbar-btn" onclick="insertMd('h2')" title="标题2">H2</button>
+                        <button class="toolbar-btn" onclick="insertMd('h3')" title="标题3">H3</button>
+                        <button class="toolbar-btn" onclick="insertMd('bold')" title="加粗"><b>B</b></button>
+                        <button class="toolbar-btn" onclick="insertMd('italic')" title="斜体"><i>I</i></button>
+                        <button class="toolbar-btn" onclick="insertMd('code')" title="行内代码">`code`</button>
+                        <button class="toolbar-btn" onclick="insertMd('codeblock')" title="代码块">```</button>
+                        <span class="toolbar-sep"></span>
+                        <button class="toolbar-btn" onclick="insertMd('ul')" title="无序列表">• 列表</button>
+                        <button class="toolbar-btn" onclick="insertMd('ol')" title="有序列表">1. 列表</button>
+                        <button class="toolbar-btn" onclick="insertMd('blockquote')" title="引用">&gt; 引用</button>
+                        <button class="toolbar-btn" onclick="insertMd('link')" title="链接">[链接]</button>
+                        <button class="toolbar-btn" onclick="insertMd('table')" title="表格">表格</button>
+                        <span class="toolbar-sep"></span>
+                        <button class="toolbar-btn" onclick="insertMd('hr')" title="分割线">---</button>
+                    </div>
+                    
+                    <!-- HTML 工具栏 -->
+                    <div class="toolbar" id="htmlToolbar" style="display:none;">
+                        <button class="toolbar-btn" onclick="insertHtml('h2')">&lt;h2&gt;</button>
+                        <button class="toolbar-btn" onclick="insertHtml('h3')">&lt;h3&gt;</button>
+                        <button class="toolbar-btn" onclick="insertHtml('p')">&lt;p&gt;</button>
+                        <button class="toolbar-btn" onclick="insertHtml('pre')">&lt;pre&gt;</button>
+                        <button class="toolbar-btn" onclick="insertHtml('ul')">&lt;ul&gt;</button>
+                        <button class="toolbar-btn" onclick="insertHtml('blockquote')">&lt;blockquote&gt;</button>
+                        <button class="toolbar-btn" onclick="insertHtml('table')">&lt;table&gt;</button>
+                    </div>
+                    
+                    <textarea id="postContent" rows="22" placeholder="在此输入文章内容..."></textarea>
+                    <div class="word-count" id="contentCount">0 字</div>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="generateCode()">📋 生成代码</button>
+                    <button class="btn btn-secondary" onclick="previewInNewTab()">🔍 新标签页预览</button>
+                    <button class="btn btn-secondary" onclick="saveToStorage()">💾 保存草稿</button>
+                    <button class="btn btn-secondary" onclick="loadFromStorage()">📂 读取草稿</button>
+                    <button class="btn btn-danger" onclick="clearForm()">🗑️ 清空</button>
+                </div>
+            </div>
+            
+            <!-- 右侧：实时预览 -->
+            <div class="editor-panel preview-panel">
+                <div class="panel-title">👁️ 实时预览</div>
+                <article class="post-article" id="previewArticle">
+                    <div class="post-loading">
+                        <p>在左侧填写内容，预览将自动更新...</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+        
+        <!-- 底部：生成代码 -->
+        <div class="editor-panel output-panel" id="outputPanel" style="display:none;">
+            <div class="panel-title">📋 生成的代码</div>
+            
+            <div class="output-options">
+                <label class="output-option">
+                    <input type="radio" name="outputType" value="single" checked>
+                    <span>仅当前文章（粘贴到 posts.js）</span>
+                </label>
+                <label class="output-option">
+                    <input type="radio" name="outputType" value="full">
+                    <span>完整 postsData 数组（替换整个文件）</span>
+                </label>
+            </div>
+            
+            <pre class="code-output" id="codeOutput"></pre>
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="copyCode()">📋 复制到剪贴板</button>
+                <button class="btn btn-secondary" onclick="downloadCode()">💾 下载文件</button>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- Marked.js Markdown 解析器 -->
+    <script src="js/vendor/marked.min.js"></script>
+    <script src="js/vendor/prism.min.js"></script>
+    <script src="js/vendor/prism-java.min.js"></script>
+    <script src="js/vendor/prism-kotlin.min.js"></script>
+    <script src="js/vendor/prism-bash.min.js"></script>
+    <script src="js/vendor/prism-c.min.js"></script>
+    <script src="js/posts.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // ========== 编辑器核心逻辑 ==========
+        
+        let currentTags = [];
+        let currentMode = 'markdown';
+        let uploadedImages = [];
+        let editingPostId = null; // 当前正在编辑的文章ID
+        let sortedPosts = [];     // 排序后的文章列表（独立副本）
+        
+        // 初始化
+        function initEditor() {
+            document.getElementById('postDate').valueAsDate = new Date();
+            
+            // 创建排序列表的独立副本
+            if (typeof postsData !== 'undefined') {
+                sortedPosts = postsData.map(p => ({...p}));
+            }
+            
+            renderSortList();
+            loadTagSuggestions();
+            bindPreview();
+            bindTagInput();
+            bindWordCount();
+            bindImageUpload();
+            bindPasteImage();
+            bindCursorTracking();
+            
+            // 检查 URL 参数是否有要编辑的文章
+            const urlId = new URLSearchParams(window.location.search).get('id');
+            if (urlId && typeof getPostById === 'function' && getPostById(urlId)) {
+                loadPost(urlId);
+            }
+            
+            // 配置 marked.js
+            marked.setOptions({
+                breaks: true,
+                gfm: true,
+                headerIds: false,
+                mangle: false,
+            });
+            
+            // 初始化自动备份系统
+            initAutoBackup();
+        }
+        
+        // ========== 文章排序列表渲染 ==========
+        function renderSortList() {
+            const container = document.getElementById('postSortList');
+            if (!sortedPosts.length) {
+                container.innerHTML = '<div class="empty-state">暂无文章，请先写文章</div>';
+                return;
+            }
+            
+            container.innerHTML = sortedPosts.map((post, index) => `
+                <div class="sort-item" draggable="true" data-index="${index}" data-id="${post.id}">
+                    <span class="sort-handle">⋮⋮</span>
+                    <span class="sort-num">${index + 1}</span>
+                    <div class="sort-info">
+                        <div class="sort-title">${escapeHtml(post.title)}</div>
+                        <div class="sort-meta">${post.date} · ${post.tags.join(', ')} · ⏱️ ${post.readTime}</div>
+                    </div>
+                    <div class="sort-actions">
+                        <button class="btn-edit" onclick="event.stopPropagation(); loadPost('${post.id}')">✏️ 编辑</button>
+                        <button class="btn-del" onclick="event.stopPropagation(); deletePost('${post.id}')">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // 绑定拖拽事件
+            container.querySelectorAll('.sort-item').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+                item.addEventListener('dragover', handleDragOver);
+                item.addEventListener('drop', handleDrop);
+                item.addEventListener('dragenter', handleDragEnter);
+                item.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+        
+        // ========== 拖拽排序逻辑 ==========
+        let dragSrcIndex = null;
+        
+        function handleDragStart(e) {
+            dragSrcIndex = parseInt(this.getAttribute('data-index'));
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', dragSrcIndex);
+        }
+        
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.sort-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+        
+        function handleDragEnter(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        }
+        
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            
+            const dragDstIndex = parseInt(this.getAttribute('data-index'));
+            if (dragSrcIndex === null || dragSrcIndex === dragDstIndex) return;
+            
+            // 交换数组元素
+            const item = sortedPosts.splice(dragSrcIndex, 1)[0];
+            sortedPosts.splice(dragDstIndex, 0, item);
+            
+            renderSortList();
+            showToast(`↕️ 已调整排序：「${item.title}」→ 第 ${dragDstIndex + 1} 位`);
+        }
+        
+        // ========== 删除文章 ==========
+        function deletePost(id) {
+            if (!confirm('⚠️ 确定要删除这篇文章吗？此操作不可恢复！')) return;
+            
+            const index = sortedPosts.findIndex(p => p.id === id);
+            if (index === -1) return;
+            
+            const title = sortedPosts[index].title;
+            sortedPosts.splice(index, 1);
+            
+            // 如果正在编辑这篇文章，清空表单
+            if (editingPostId === id) {
+                clearForm(false);
+            }
+            
+            renderSortList();
+            showToast(`🗑️ 已删除：${title}`);
+        }
+        
+        // ========== 加载文章到编辑器 ==========
+        function loadPost(id) {
+            const post = sortedPosts.find(p => p.id === id);
+            if (!post) return;
+            
+            editingPostId = id;
+            document.getElementById('postId').value = post.id;
+            document.getElementById('postTitle').value = post.title;
+            document.getElementById('postDate').value = post.date;
+            document.getElementById('postReadTime').value = post.readTime;
+            document.getElementById('postExcerpt').value = post.excerpt;
+            
+            // 判断内容是 HTML 还是 Markdown
+            const content = post.content.trim();
+            const hasHtmlTags = /<(h[1-6]|p|pre|div|table|ul|ol|blockquote)[\s>]/i.test(content);
+            switchMode(hasHtmlTags ? 'html' : 'markdown');
+            
+            if (hasHtmlTags) {
+                document.getElementById('postContent').value = htmlToMarkdown(content);
+            } else {
+                document.getElementById('postContent').value = content;
+            }
+            
+            currentTags = [...post.tags];
+            renderTags();
+            updatePreview();
+            
+            // 滚动到编辑器
+            document.querySelector('.editor-layout').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showToast('✏️ 正在编辑：' + post.title);
+        }
+        
+        // 简单的 HTML 转 Markdown
+        function htmlToMarkdown(html) {
+            return html
+                .replace(/<h2>(.*?)<\/h2>/gi, '## $1\n')
+                .replace(/<h3>(.*?)<\/h3>/gi, '### $1\n')
+                .replace(/<h4>(.*?)<\/h4>/gi, '#### $1\n')
+                .replace(/<p>(.*?)<\/p>/gi, '$1\n\n')
+                .replace(/<blockquote>(.*?)<\/blockquote>/gis, '> $1\n\n')
+                .replace(/<pre><code(?:\s+class="language-(\w+)")?>(.*?)<\/code><\/pre>/gis, '```$1\n$2\n```\n')
+                .replace(/<code>(.*?)<\/code>/gi, '`$1`')
+                .replace(/<ul>(.*?)<\/ul>/gis, (m, inner) => {
+                    return inner.replace(/<li>(.*?)<\/li>/gi, '- $1\n') + '\n';
+                })
+                .replace(/<ol>(.*?)<\/ol>/gis, (m, inner) => {
+                    let i = 1;
+                    return inner.replace(/<li>(.*?)<\/li>/gi, () => `${i++}. $1\n`) + '\n';
+                })
+                .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
+                .replace(/<em>(.*?)<\/em>/gi, '*$1*')
+                .replace(/<a\s+href="([^"]+)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)')
+                .replace(/<img\s+src="([^"]+)"[^>]*alt="([^"]*)"[^>]*\/?>/gi, '![$2]($1)')
+                .replace(/<img\s+src="([^"]+)"[^>]*\/?>/gi, '![]($1)')
+                .replace(/<br\s*\/?>/gi, '\n')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&amp;/g, '&')
+                .trim();
+        }
+        
+        // ========== 模式切换 ==========
+        function switchMode(mode) {
+            currentMode = mode;
+            document.getElementById('modeMarkdown').classList.toggle('active', mode === 'markdown');
+            document.getElementById('modeHtml').classList.toggle('active', mode === 'html');
+            document.getElementById('mdToolbar').style.display = mode === 'markdown' ? 'flex' : 'none';
+            document.getElementById('htmlToolbar').style.display = mode === 'html' ? 'flex' : 'none';
+            document.getElementById('modeLabel').textContent = mode === 'markdown' 
+                ? ' — 当前为 Markdown 模式，支持标准 Markdown 语法'
+                : ' — 当前为 HTML 模式，直接编写 HTML 标签';
+            updatePreview();
+        }
+        
+        // ========== 标签 ==========
+        function loadTagSuggestions() {
+            if (typeof getAllTags !== 'function') return;
+            const container = document.getElementById('tagSuggestions');
+            const tags = getAllTags().slice(0, 12);
+            container.innerHTML = tags.map(([tag]) => 
+                `<span class="tag-suggestion" onclick="addTag('${tag}')">+ ${tag}</span>`
+            ).join('');
+        }
+        
+        function bindTagInput() {
+            const input = document.getElementById('tagInput');
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const value = input.value.trim().replace(/,$/, '');
+                    if (value && !currentTags.includes(value)) {
+                        addTag(value);
+                    }
+                    input.value = '';
+                }
+                if (e.key === 'Backspace' && !input.value && currentTags.length > 0) {
+                    currentTags.pop();
+                    renderTags();
+                }
+            });
+        }
+        
+        function addTag(tag) {
+            if (!currentTags.includes(tag)) {
+                currentTags.push(tag);
+                renderTags();
+            }
+        }
+        
+        function removeTag(tag) {
+            currentTags = currentTags.filter(t => t !== tag);
+            renderTags();
+        }
+        
+        function renderTags() {
+            const wrapper = document.getElementById('tagWrapper');
+            const input = document.getElementById('tagInput');
+            wrapper.querySelectorAll('.tag-chip').forEach(el => el.remove());
+            currentTags.forEach(tag => {
+                const chip = document.createElement('span');
+                chip.className = 'tag-chip';
+                chip.innerHTML = `${tag} <span class="remove" onclick="removeTag('${tag}')">×</span>`;
+                wrapper.insertBefore(chip, input);
+            });
+            updatePreview();
+        }
+        
+        // ========== 图片上传 ==========
+        function bindImageUpload() {
+            const input = document.getElementById('imageInput');
+            const dropZone = document.getElementById('dropZone');
+            
+            input.addEventListener('change', (e) => handleFiles(e.target.files));
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                handleFiles(e.dataTransfer.files);
+            });
+        }
+        
+        function bindPasteImage() {
+            document.addEventListener('paste', (e) => {
+                const files = Array.from(e.clipboardData.items)
+                    .filter(item => item.type.indexOf('image') !== -1)
+                    .map(item => item.getAsFile());
+                if (files.length > 0) {
+                    handleFiles(files);
+                    showToast(`📎 已粘贴 ${files.length} 张图片`);
+                }
+            });
+        }
+        
+        function handleFiles(files) {
+            const maxSize = 2 * 1024 * 1024;
+            const warningEl = document.getElementById('sizeWarning');
+            
+            Array.from(files).forEach(file => {
+                if (!file.type.startsWith('image/')) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const dataUrl = e.target.result;
+                    uploadedImages.push({
+                        name: file.name,
+                        dataUrl: dataUrl,
+                        size: (dataUrl.length / 1024).toFixed(1),
+                        isLarge: dataUrl.length > maxSize
+                    });
+                    renderImageGallery();
+                    if (dataUrl.length > maxSize) {
+                        warningEl.textContent = `⚠️ 「${file.name}」Base64 后体积较大，建议压缩或放到 assets/ 目录`;
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        function renderImageGallery() {
+            const gallery = document.getElementById('imageGallery');
+            gallery.innerHTML = uploadedImages.map((img, index) => `
+                <div class="image-item">
+                    <img src="${img.dataUrl}" alt="${img.name}">
+                    <div class="image-actions">
+                        <button class="image-action-btn" onclick="insertImageToEditor(${index})" title="插入">⬇️</button>
+                        <button class="image-action-btn" onclick="copyImageCode(${index})" title="复制">📋</button>
+                        <button class="image-action-btn" onclick="removeImage(${index})" title="删除">🗑️</button>
+                    </div>
+                    <div class="image-name">${img.name} · ${img.size}KB${img.isLarge ? ' ⚠️' : ''}</div>
+                </div>
+            `).join('');
+        }
+        
+        function insertImageToEditor(index) {
+            const img = uploadedImages[index];
+            const textarea = document.getElementById('postContent');
+            const code = currentMode === 'markdown' 
+                ? `\n![${img.name}](${img.dataUrl})\n`
+                : `\n<img src="${img.dataUrl}" alt="${img.name}">\n`;
+            insertAtCursor(textarea, code);
+            updatePreview();
+            showToast('📎 图片已插入');
+        }
+        
+        function copyImageCode(index) {
+            const img = uploadedImages[index];
+            const code = currentMode === 'markdown' 
+                ? `![${img.name}](${img.dataUrl})`
+                : `<img src="${img.dataUrl}" alt="${img.name}">`;
+            navigator.clipboard.writeText(code).then(() => showToast('📋 图片代码已复制'));
+        }
+        
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            renderImageGallery();
+        }
+        
+        // ========== Markdown/HTML 工具栏 ==========
+        function insertMd(type) {
+            const textarea = document.getElementById('postContent');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selected = textarea.value.substring(start, end);
+            
+            const templates = {
+                h2: `## ${selected || '标题'}\n\n`,
+                h3: `### ${selected || '小标题'}\n\n`,
+                bold: `**${selected || '加粗文字'}**`,
+                italic: `*${selected || '斜体文字'}*`,
+                code: `\`${selected || 'code'}\``,
+                codeblock: `\n\`\`\`java\n${selected || '// 代码'}\n\`\`\`\n`,
+                ul: `\n- ${selected || '列表项'}\n- 列表项\n- 列表项\n`,
+                ol: `\n1. ${selected || '列表项'}\n2. 列表项\n3. 列表项\n`,
+                blockquote: `\n> ${selected || '引用内容'}\n`,
+                link: `[${selected || '链接文字'}](https://)`,
+                table: `\n| 列1 | 列2 | 列3 |\n|-----|-----|-----|\n| A   | B   | C   |\n| D   | E   | F   |\n`,
+                hr: `\n---\n`,
+            };
+            
+            insertAtCursor(textarea, templates[type] || '');
+            updatePreview();
+        }
+        
+        function insertHtml(tag) {
+            const textarea = document.getElementById('postContent');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selected = textarea.value.substring(start, end);
+            
+            const templates = {
+                h2: `<h2>${selected || '标题'}</h2>\n`,
+                h3: `<h3>${selected || '小标题'}</h3>\n`,
+                p: `<p>${selected || '段落内容'}</p>\n`,
+                pre: `<pre><code class="language-java">\n${selected || '// 代码'}\n</code></pre>\n`,
+                ul: `<ul>\n<li>${selected || '列表项'}</li>\n<li>列表项</li>\n</ul>\n`,
+                blockquote: `<blockquote>\n${selected || '引用内容'}\n</blockquote>\n`,
+                table: `<table>\n<tr><th>列1</th><th>列2</th></tr>\n<tr><td>数据1</td><td>数据2</td></tr>\n</table>\n`,
+            };
+            
+            insertAtCursor(textarea, templates[tag] || '');
+            updatePreview();
+        }
+        
+        function insertAtCursor(textarea, text) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            textarea.setRangeText(text, start, end, 'end');
+            textarea.focus();
+        }
+        
+        function bindCursorTracking() {
+            const textarea = document.getElementById('postContent');
+            textarea.addEventListener('click', () => {});
+            textarea.addEventListener('keyup', () => {});
+        }
+        
+        // ========== 实时预览 ==========
+        function bindPreview() {
+            ['postTitle', 'postDate', 'postReadTime', 'postExcerpt', 'postContent'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', updatePreview);
+            });
+        }
+        
+        function updatePreview() {
+            const title = document.getElementById('postTitle').value || '文章标题';
+            const date = document.getElementById('postDate').value || new Date().toISOString().split('T')[0];
+            const readTime = document.getElementById('postReadTime').value || '10 min';
+            const rawContent = document.getElementById('postContent').value || '暂无内容...';
+            
+            let contentHtml = currentMode === 'markdown' ? marked.parse(rawContent) : rawContent;
+            
+            const preview = document.getElementById('previewArticle');
+            preview.innerHTML = `
+                <header class="post-header">
+                    <div class="post-meta">
+                        <span class="post-date">📅 ${date}</span>
+                        <span class="post-stat">⏱️ ${readTime}</span>
+                        <div class="post-tags">
+                            ${currentTags.map(t => `<span class="post-tag">${t}</span>`).join('') || '<span class="post-tag">未分类</span>'}
+                        </div>
+                    </div>
+                    <h1>${title}</h1>
+                </header>
+                <div class="post-body">${contentHtml}</div>
+            `;
+            
+            if (window.Prism) Prism.highlightAllUnder(preview);
+        }
+        
+        // ========== 字数统计 ==========
+        function bindWordCount() {
+            const update = (id, displayId) => {
+                const el = document.getElementById(id);
+                const display = document.getElementById(displayId);
+                if (!el || !display) return;
+                el.addEventListener('input', () => display.textContent = `${el.value.length} 字`);
+            };
+            update('postExcerpt', 'excerptCount');
+            update('postContent', 'contentCount');
+        }
+        
+        // ========== 新标签页预览 ==========
+        function previewInNewTab() {
+            const title = document.getElementById('postTitle').value || '预览';
+            const date = document.getElementById('postDate').value || new Date().toISOString().split('T')[0];
+            const readTime = document.getElementById('postReadTime').value || '10 min';
+            const rawContent = document.getElementById('postContent').value || '';
+            let contentHtml = currentMode === 'markdown' ? marked.parse(rawContent) : rawContent;
+            
+            const html = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>${title} - 预览</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/vendor/prism-tomorrow.min.css"></head><body><main class="container" style="padding-top:40px;"><article class="post-article"><header class="post-header"><div class="post-meta"><span class="post-date">📅 ${date}</span><span class="post-stat">⏱️ ${readTime}</span><div class="post-tags">${currentTags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div></div><h1>${title}</h1></header><div class="post-body">${contentHtml}</div></article></main><script src="js/vendor/prism.min.js"><\/script><script src="js/vendor/prism-java.min.js"><\/script></body></html>`;
+            
+            const blob = new Blob([html], { type: 'text/html' });
+            window.open(URL.createObjectURL(blob), '_blank');
+        }
+        
+        // ========== 生成代码 ==========
+        function generateCode() {
+            const id = document.getElementById('postId').value.trim();
+            const title = document.getElementById('postTitle').value.trim();
+            const date = document.getElementById('postDate').value;
+            const readTime = document.getElementById('postReadTime').value.trim() || '10 min';
+            const excerpt = document.getElementById('postExcerpt').value.trim();
+            const rawContent = document.getElementById('postContent').value.trim();
+            
+            if (!id || !title || !rawContent) {
+                showToast('❌ 请填写文章 ID、标题和正文');
+                return;
+            }
+            
+            // 更新或添加到 sortedPosts
+            const postData = buildPostObject(id, title, date, readTime, excerpt, rawContent);
+            
+            if (editingPostId) {
+                // 编辑已有文章
+                const index = sortedPosts.findIndex(p => p.id === editingPostId);
+                if (index !== -1) {
+                    sortedPosts[index] = postData;
+                    showToast('✅ 已更新文章：' + title);
+                } else {
+                    sortedPosts.unshift(postData);
+                    showToast('✅ 已添加新文章：' + title);
+                }
+            } else {
+                // 新建文章，插入到最前面
+                const existingIndex = sortedPosts.findIndex(p => p.id === id);
+                if (existingIndex !== -1) {
+                    if (!confirm('⚠️ 文章 ID 已存在，是否覆盖？')) return;
+                    sortedPosts[existingIndex] = postData;
+                } else {
+                    sortedPosts.unshift(postData);
+                }
+                showToast('✅ 已添加新文章：' + title);
+            }
+            
+            editingPostId = id;
+            renderSortList();
+            
+            // 生成代码
+            const code = formatPostCode(postData);
+            document.getElementById('codeOutput').textContent = code;
+            document.querySelector('input[name="outputType"][value="single"]').checked = true;
+            document.getElementById('outputPanel').style.display = 'block';
+            document.getElementById('outputPanel').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 生成完整 posts.js 代码
+        function generateAllPostsCode() {
+            if (!sortedPosts.length) {
+                showToast('❌ 没有文章可生成');
+                return;
+            }
+            
+            const code = `const postsData = [\n${sortedPosts.map(p => formatPostCode(p, 4)).join(',\n')}\n];`;
+            document.getElementById('codeOutput').textContent = code;
+            document.querySelector('input[name="outputType"][value="full"]').checked = true;
+            document.getElementById('outputPanel').style.display = 'block';
+            document.getElementById('outputPanel').scrollIntoView({ behavior: 'smooth' });
+            showToast('📋 已生成完整 postsData 代码');
+        }
+        
+        function buildPostObject(id, title, date, readTime, excerpt, rawContent) {
+            let contentHtml = currentMode === 'markdown' ? marked.parse(rawContent) : rawContent;
+            contentHtml = contentHtml.replace(/\n\s*\n/g, '\n').trim();
+            
+            return {
+                id: id,
+                title: title,
+                date: date,
+                tags: [...currentTags],
+                excerpt: excerpt,
+                readTime: readTime,
+                content: contentHtml
+            };
+        }
+        
+        function formatPostCode(post, indent = 0) {
+            const pad = ' '.repeat(indent);
+            return `${pad}{\n${pad}    id: "${post.id}",\n${pad}    title: "${post.title}",\n${pad}    date: "${post.date}",\n${pad}    tags: [${post.tags.map(t => `"${t}"`).join(', ')}],\n${pad}    excerpt: "${post.excerpt}",\n${pad}    readTime: "${post.readTime}",\n${pad}    content: \`\n${escapeBackticks(post.content)}\n${pad}    \`\n${pad}}`;
+        }
+        
+        function escapeBackticks(str) {
+            return str.replace(/\\/g, '\\\\').replace(/\`/g, '\\`');
+        }
+        
+        function copyCode() {
+            const code = document.getElementById('codeOutput').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('📋 已复制到剪贴板！');
+            }).catch(() => {
+                showToast('❌ 复制失败，请手动复制');
+            });
+        }
+        
+        function downloadCode() {
+            const outputType = document.querySelector('input[name="outputType"]:checked').value;
+            const code = document.getElementById('codeOutput').textContent;
+            const id = document.getElementById('postId').value.trim() || 'posts';
+            const filename = outputType === 'full' ? 'posts.js' : `${id}.js`;
+            
+            const blob = new Blob([code], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('💾 文件已下载');
+        }
+        
+        // ========== 草稿管理 ==========
+        function saveToStorage() {
+            const data = {
+                id: document.getElementById('postId').value,
+                title: document.getElementById('postTitle').value,
+                date: document.getElementById('postDate').value,
+                readTime: document.getElementById('postReadTime').value,
+                tags: currentTags,
+                excerpt: document.getElementById('postExcerpt').value,
+                content: document.getElementById('postContent').value,
+                mode: currentMode,
+                images: uploadedImages,
+                editingPostId: editingPostId,
+            };
+            localStorage.setItem('blog_draft_v2', JSON.stringify(data));
+            showToast('💾 草稿已保存到浏览器');
+        }
+        
+        function loadFromStorage() {
+            const saved = localStorage.getItem('blog_draft_v2');
+            if (!saved) {
+                showToast('📂 没有找到草稿');
+                return;
+            }
+            
+            const data = JSON.parse(saved);
+            document.getElementById('postId').value = data.id || '';
+            document.getElementById('postTitle').value = data.title || '';
+            document.getElementById('postDate').value = data.date || '';
+            document.getElementById('postReadTime').value = data.readTime || '';
+            currentTags = data.tags || [];
+            renderTags();
+            document.getElementById('postExcerpt').value = data.excerpt || '';
+            document.getElementById('postContent').value = data.content || '';
+            editingPostId = data.editingPostId || null;
+            
+            if (data.mode) switchMode(data.mode);
+            if (data.images) {
+                uploadedImages = data.images;
+                renderImageGallery();
+            }
+            
+            updatePreview();
+            showToast('📂 草稿已恢复');
+        }
+        
+        function clearForm(confirmIt = true) {
+            if (confirmIt && !confirm('确定要清空所有内容吗？未保存的草稿将丢失。')) return;
+            
+            document.getElementById('postId').value = '';
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postDate').valueAsDate = new Date();
+            document.getElementById('postReadTime').value = '10 min';
+            currentTags = [];
+            renderTags();
+            document.getElementById('postExcerpt').value = '';
+            document.getElementById('postContent').value = '';
+            document.getElementById('codeOutput').textContent = '';
+            document.getElementById('outputPanel').style.display = 'none';
+            uploadedImages = [];
+            renderImageGallery();
+            document.getElementById('sizeWarning').textContent = '';
+            editingPostId = null;
+            
+            switchMode('markdown');
+            updatePreview();
+            if (confirmIt) showToast('🗑️ 已清空');
+        }
+        
+        // ========== Toast ==========
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // ========== 自动备份系统 ==========
+        
+        const BACKUP_KEY = 'blog_backups';
+        const MAX_BACKUPS = 20; // 最多保留20个备份
+        let autoBackupInterval = null;
+        let lastBackupHash = '';
+        
+        function initAutoBackup() {
+            // 绑定自动备份开关
+            const toggle = document.getElementById('autoSaveToggle');
+            toggle.addEventListener('change', () => {
+                if (toggle.checked) {
+                    startAutoBackup();
+                    showToast('✅ 自动备份已开启');
+                } else {
+                    stopAutoBackup();
+                    showToast('⏸️ 自动备份已暂停');
+                }
+                updateBackupStatus();
+            });
+            
+            // 监听内容变化，触发防抖备份
+            let debounceTimer;
+            const watchFields = ['postId', 'postTitle', 'postDate', 'postReadTime', 'postExcerpt', 'postContent'];
+            watchFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        if (toggle.checked && hasContentChanged()) {
+                            createBackup();
+                        }
+                    }, 3000);
+                });
+            });
+            
+            // 启动定时备份
+            startAutoBackup();
+            
+            // 渲染备份列表
+            renderBackupList();
+            
+            // 检查是否需要恢复（页面加载时）
+            setTimeout(checkAutoRestore, 500);
+        }
+        
+        function startAutoBackup() {
+            stopAutoBackup();
+            autoBackupInterval = setInterval(() => {
+                if (document.getElementById('autoSaveToggle').checked && hasContentChanged()) {
+                    createBackup();
+                }
+            }, 30000); // 每30秒
+        }
+        
+        function stopAutoBackup() {
+            if (autoBackupInterval) {
+                clearInterval(autoBackupInterval);
+                autoBackupInterval = null;
+            }
+        }
+        
+        function hasContentChanged() {
+            const current = getCurrentStateHash();
+            if (current === lastBackupHash) return false;
+            lastBackupHash = current;
+            return true;
+        }
+        
+        function getCurrentStateHash() {
+            const state = {
+                id: document.getElementById('postId').value,
+                title: document.getElementById('postTitle').value,
+                content: document.getElementById('postContent').value,
+                excerpt: document.getElementById('postExcerpt').value,
+                sortedPosts: sortedPosts,
+            };
+            return JSON.stringify(state).slice(0, 200);
+        }
+        
+        function getBackups() {
+            try {
+                const data = localStorage.getItem(BACKUP_KEY);
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+        
+        function saveBackups(backups) {
+            localStorage.setItem(BACKUP_KEY, JSON.stringify(backups));
+        }
+        
+        function createBackup(manual = false) {
+            const id = document.getElementById('postId').value;
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+            
+            // 空内容不备份
+            if (!title && !content) return;
+            
+            const backups = getBackups();
+            const now = new Date();
+            
+            // 检查是否需要合并（3分钟内同一文章的备份合并）
+            const lastBackup = backups[0];
+            if (!manual && lastBackup && lastBackup.id === (editingPostId || id)) {
+                const lastTime = new Date(lastBackup.time);
+                if (now - lastTime < 3 * 60 * 1000) {
+                    // 更新最后一个备份而不是创建新的
+                    backups[0] = buildBackupObject(now, manual);
+                    saveBackups(backups);
+                    renderBackupList();
+                    updateBackupStatus('已更新备份');
+                    return;
+                }
+            }
+            
+            // 创建新备份
+            backups.unshift(buildBackupObject(now, manual));
+            
+            // 限制数量
+            if (backups.length > MAX_BACKUPS) {
+                backups.splice(MAX_BACKUPS);
+            }
+            
+            saveBackups(backups);
+            renderBackupList();
+            updateBackupStatus(manual ? '手动备份成功' : '自动备份成功');
+        }
+        
+        function buildBackupObject(time, manual = false) {
+            return {
+                time: time.toISOString(),
+                id: editingPostId || document.getElementById('postId').value || 'new-post',
+                title: document.getElementById('postTitle').value || '未命名草稿',
+                postData: {
+                    id: document.getElementById('postId').value,
+                    title: document.getElementById('postTitle').value,
+                    date: document.getElementById('postDate').value,
+                    readTime: document.getElementById('postReadTime').value,
+                    tags: [...currentTags],
+                    excerpt: document.getElementById('postExcerpt').value,
+                    content: document.getElementById('postContent').value,
+                    mode: currentMode,
+                },
+                sortedPosts: JSON.parse(JSON.stringify(sortedPosts)),
+                images: JSON.parse(JSON.stringify(uploadedImages)),
+                editingPostId: editingPostId,
+                manual: manual,
+            };
+        }
+        
+        function renderBackupList() {
+            const container = document.getElementById('backupList');
+            const backups = getBackups();
+            
+            if (!backups.length) {
+                container.innerHTML = '<div class="empty-state">暂无备份，开始写作后会自动备份</div>';
+                return;
+            }
+            
+            container.innerHTML = backups.map((backup, index) => {
+                const time = new Date(backup.time);
+                const timeStr = time.toLocaleString('zh-CN', {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+                const size = (JSON.stringify(backup).length / 1024).toFixed(1);
+                const isManual = backup.manual ? '· 手动' : '· 自动';
+                
+                return `
+                    <div class="backup-item">
+                        <span class="backup-time">${timeStr}</span>
+                        <div class="backup-info">
+                            <div class="backup-title">${escapeHtml(backup.title)}</div>
+                            <div class="backup-meta">${size}KB ${isManual} · 共 ${backup.sortedPosts?.length || 0} 篇文章</div>
+                        </div>
+                        <div class="backup-actions">
+                            <button class="btn-restore" onclick="restoreBackup(${index})">↩️ 恢复</button>
+                            <button class="btn-dl-backup" onclick="downloadBackup(${index})">💾</button>
+                            <button class="btn-del-backup" onclick="deleteBackup(${index})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function restoreBackup(index) {
+            const backups = getBackups();
+            const backup = backups[index];
+            if (!backup) return;
+            
+            if (!confirm(`确定要恢复到「${backup.title}」的状态吗？\n\n时间：${new Date(backup.time).toLocaleString('zh-CN')}\n当前编辑的内容将被覆盖。`)) {
+                return;
+            }
+            
+            // 恢复编辑器状态
+            const pd = backup.postData;
+            document.getElementById('postId').value = pd.id || '';
+            document.getElementById('postTitle').value = pd.title || '';
+            document.getElementById('postDate').value = pd.date || '';
+            document.getElementById('postReadTime').value = pd.readTime || '10 min';
+            document.getElementById('postExcerpt').value = pd.excerpt || '';
+            document.getElementById('postContent').value = pd.content || '';
+            
+            currentTags = pd.tags || [];
+            renderTags();
+            
+            if (pd.mode) switchMode(pd.mode);
+            
+            // 恢复排序列表
+            if (backup.sortedPosts && backup.sortedPosts.length) {
+                sortedPosts = backup.sortedPosts;
+                renderSortList();
+            }
+            
+            // 恢复图片
+            if (backup.images) {
+                uploadedImages = backup.images;
+                renderImageGallery();
+            }
+            
+            editingPostId = backup.editingPostId || null;
+            
+            updatePreview();
+            showToast('↩️ 已恢复到备份状态');
+        }
+        
+        function deleteBackup(index) {
+            const backups = getBackups();
+            if (!confirm('确定删除这个备份吗？')) return;
+            
+            backups.splice(index, 1);
+            saveBackups(backups);
+            renderBackupList();
+            showToast('🗑️ 备份已删除');
+        }
+        
+        function clearAllBackups() {
+            const backups = getBackups();
+            if (!backups.length) {
+                showToast('暂无备份可清空');
+                return;
+            }
+            if (!confirm(`确定清空全部 ${backups.length} 个备份吗？此操作不可恢复。`)) return;
+            
+            localStorage.removeItem(BACKUP_KEY);
+            renderBackupList();
+            showToast('🗑️ 所有备份已清空');
+        }
+        
+        function createManualBackup() {
+            createBackup(true);
+            showToast('💾 手动备份完成');
+        }
+        
+        function downloadBackup(index) {
+            const backups = getBackups();
+            const backup = backups[index];
+            if (!backup) return;
+            
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `blog-backup-${backup.id}-${backup.time.slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('💾 备份文件已下载');
+        }
+        
+        function updateBackupStatus(msg) {
+            const toggle = document.getElementById('autoSaveToggle');
+            const text = document.getElementById('backupStatusText');
+            const dot = document.querySelector('.status-dot');
+            
+            if (!toggle.checked) {
+                text.textContent = '自动备份已关闭，数据不会自动保存';
+                if (dot) dot.style.animation = 'none';
+                return;
+            }
+            
+            const backups = getBackups();
+            const count = backups.length;
+            const latest = count > 0 ? new Date(backups[0].time).toLocaleTimeString('zh-CN') : '无';
+            
+            if (msg) {
+                text.textContent = `${msg} · 共 ${count} 个备份 · 最新 ${latest}`;
+            } else {
+                text.textContent = `自动备份已开启，每 30 秒自动保存 · 共 ${count} 个备份 · 最新 ${latest}`;
+            }
+            
+            if (dot) dot.style.animation = 'pulse 2s infinite';
+        }
+        
+        function checkAutoRestore() {
+            const backups = getBackups();
+            if (!backups.length) return;
+            
+            const latest = backups[0];
+            const lastTime = new Date(latest.time);
+            const now = new Date();
+            const minutesAgo = Math.floor((now - lastTime) / 60000);
+            
+            // 如果最新备份在 60 分钟内，且当前编辑器为空，提示恢复
+            const hasContent = document.getElementById('postTitle').value || document.getElementById('postContent').value;
+            
+            if (minutesAgo < 60 && !hasContent) {
+                if (confirm(`检测到 ${minutesAgo} 分钟前的自动备份：\n\n「${latest.title}」\n\n是否恢复到该备份状态？`)) {
+                    restoreBackup(0);
+                }
+            }
+        }
+        
+        // 启动
+        initEditor();
+    </script>
+</body>
+</html>

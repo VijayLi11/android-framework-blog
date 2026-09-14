@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章详情 | Android Framework Blog</title>
+    <meta name="description" content="Android 系统稳定性与 Framework 技术文章">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/vendor/prism-tomorrow.min.css">
+</head>
+<body>
+    <div class="matrix-bg" id="matrixBg"></div>
+    
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="brand-icon">&lt;/&gt;</span>
+            <span class="brand-text">Framework<span class="highlight">.dev</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">首页</a>
+            <a href="tags.html">标签</a>
+            <a href="about.html">关于</a>
+            <button class="theme-toggle" id="themeToggle" title="切换主题">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+        <button class="menu-toggle" id="menuToggle">☰</button>
+    </nav>
+
+    <main class="container">
+        <article class="post-article" id="postArticle">
+            <div class="post-loading">
+                <div class="loading-spinner"></div>
+                <p>加载文章中...</p>
+            </div>
+        </article>
+
+        <!-- Post Navigation -->
+        <div class="post-nav" id="postNav"></div>
+
+        <!-- Comments：如需启用评论，请前往 https://giscus.app/zh-CN 获取配置，
+             替换下方注释中的 repo 信息后取消注释
+        <section class="comments-section">
+            <h3>💬 评论</h3>
+            <div class="giscus-container">
+                <script src="https://giscus.app/client.js"
+                    data-repo="yourname/your-blog-repo"
+                    data-repo-id="R_xxxxxxxx"
+                    data-category="Announcements"
+                    data-category-id="DIC_xxxxxxxx"
+                    data-mapping="pathname"
+                    data-strict="0"
+                    data-reactions-enabled="1"
+                    data-emit-metadata="0"
+                    data-input-position="bottom"
+                    data-theme="preferred_color_scheme"
+                    data-lang="zh-CN"
+                    crossorigin="anonymous"
+                    async>
+                </script>
+            </div>
+            <p class="giscus-hint">
+                💡 使用 Giscus 评论系统（基于 GitHub Discussions）。如需启用，请替换上方脚本中的 repo 信息。
+            </p>
+        </section>
+        -->
+    </main>
+
+    <!-- TOC Sidebar -->
+    <aside class="toc-sidebar" id="tocSidebar">
+        <div class="toc-header">目录</div>
+        <div class="toc-content" id="tocContent"></div>
+    </aside>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Built with pure HTML/CSS/JS · Deploy on GitHub Pages</p>
+        </div>
+    </footer>
+
+    <script src="js/vendor/prism.min.js"></script>
+    <script src="js/vendor/prism-java.min.js"></script>
+    <script src="js/vendor/prism-kotlin.min.js"></script>
+    <script src="js/vendor/prism-bash.min.js"></script>
+    <script src="js/vendor/prism-c.min.js"></script>
+    <script src="js/posts.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/post.js"></script>
+</body>
+</html>
