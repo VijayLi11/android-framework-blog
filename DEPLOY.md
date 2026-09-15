@@ -88,7 +88,25 @@
 - **VS Code Live Server**（推荐）：右键 `index.html` → Open with Live Server
 - 直接双击 `index.html` 也能浏览（文章详情页需通过 URL 参数加载，建议用 Live Server）
 
-## 六、目录结构
+## 六、换电脑怎么办
+
+所有文章和代码都在 GitHub 仓库里，新电脑只需一次性准备：
+
+1. 安装 [Git](https://git-scm.com)
+2. 生成新 SSH 密钥并添加到 GitHub（支持多 key 并存）：
+   ```bash
+   ssh-keygen -t rsa -b 4096
+   cat ~/.ssh/id_rsa.pub   # 复制，粘贴到 github.com/settings/ssh/new
+   ```
+3. 拉取仓库：`git clone git@github.com:VijayLi11/android-framework-blog.git`
+4. 之后流程不变：`write.bat` 写作 → 保存 → `publish.bat` 发布
+
+注意：
+- 编辑器首次点「保存到 posts.js」需重新选择一次文件（授权存在各电脑的浏览器里）
+- 浏览器草稿（localStorage）不随仓库转移，换电脑前请先保存/发布草稿
+- **应急方案**：不装任何环境，直接在 GitHub 网页上编辑 `js/posts.js` → Commit，同样自动部署（手机也行）
+
+## 七、目录结构
 
 ```
 blog/
