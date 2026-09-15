@@ -127,6 +127,12 @@
             if (sidebar.classList.contains('open') && !sidebar.contains(e.target)) closeTOC();
         });
         
+        // 进入页面默认展开目录（移动端屏幕窄，保持收起，点浮动按钮弹出）
+        if (window.innerWidth > 1200) {
+            sidebar.classList.add('open');
+            if (toggle) toggle.classList.remove('visible');
+        }
+        
         // 平滑滚动
         toc.querySelectorAll('a').forEach(a => {
             a.addEventListener('click', (e) => {
