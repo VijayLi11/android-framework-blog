@@ -819,6 +819,7 @@
         <div class="nav-links">
             <a href="index.html">首页</a>
             <a href="tags.html">标签</a>
+            <a href="guide.html">导读</a>
             <a href="about.html">关于</a>
             <a href="write.html" class="active">写作</a>
             <button class="theme-toggle" id="themeToggle" title="切换主题">
@@ -888,6 +889,12 @@
                 <div class="form-group">
                     <label>文章标题</label>
                     <input type="text" id="postTitle" placeholder="输入文章标题...">
+                </div>
+                
+                <div class="form-group">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                        <input type="checkbox" id="postPinned" style="width:auto;"> 📌 置顶这篇文章（显示在首页最前面）
+                    </label>
                 </div>
                 
                 <div class="form-row">
@@ -1173,6 +1180,7 @@
             if (!post) return;
             
             editingPostId = id;
+            document.getElementById('postPinned').checked = !!post.pinned;
             document.getElementById('postId').value = post.id;
             document.getElementById('postTitle').value = post.title;
             document.getElementById('postDate').value = post.date;
@@ -1588,6 +1596,7 @@
                 id: id,
                 title: title,
                 date: date,
+                pinned: document.getElementById('postPinned').checked,
                 tags: [...currentTags],
                 excerpt: excerpt,
                 readTime: readTime,
@@ -1597,7 +1606,8 @@
         
         function formatPostCode(post, indent = 0) {
             const pad = ' '.repeat(indent);
-            return `${pad}{\n${pad}    id: "${post.id}",\n${pad}    title: "${post.title}",\n${pad}    date: "${post.date}",\n${pad}    tags: [${post.tags.map(t => `"${t}"`).join(', ')}],\n${pad}    excerpt: "${post.excerpt}",\n${pad}    readTime: "${post.readTime}",\n${pad}    content: \`\n${escapeBackticks(post.content)}\n${pad}    \`\n${pad}}`;
+            const pinnedLine = post.pinned ? `${pad}    pinned: true,\n` : '';
+            return `${pad}{\n${pad}    id: "${post.id}",\n${pad}    title: "${post.title}",\n${pad}    date: "${post.date}",\n${pinnedLine}${pad}    tags: [${post.tags.map(t => `"${t}"`).join(', ')}],\n${pad}    excerpt: "${post.excerpt}",\n${pad}    readTime: "${post.readTime}",\n${pad}    content: \`\n${escapeBackticks(post.content)}\n${pad}    \`\n${pad}}`;
         }
         
         function escapeBackticks(str) {
@@ -1726,6 +1736,7 @@
                 tags: currentTags,
                 excerpt: document.getElementById('postExcerpt').value,
                 content: document.getElementById('postContent').value,
+                pinned: document.getElementById('postPinned').checked,
                 mode: currentMode,
                 images: uploadedImages,
                 editingPostId: editingPostId,
@@ -1750,6 +1761,7 @@
             renderTags();
             document.getElementById('postExcerpt').value = data.excerpt || '';
             document.getElementById('postContent').value = data.content || '';
+            document.getElementById('postPinned').checked = !!data.pinned;
             editingPostId = data.editingPostId || null;
             
             if (data.mode) switchMode(data.mode);
@@ -1773,6 +1785,7 @@
             renderTags();
             document.getElementById('postExcerpt').value = '';
             document.getElementById('postContent').value = '';
+            document.getElementById('postPinned').checked = false;
             document.getElementById('codeOutput').textContent = '';
             document.getElementById('outputPanel').style.display = 'none';
             uploadedImages = [];

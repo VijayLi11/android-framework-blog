@@ -884,6 +884,36 @@ adb shell input swipe 100 500 900 500 200</code></pre>
 // <<<POSTS-END>>>
 ];
 
+// 导读分类（guide.html 使用）：name 分类名，desc 简介，posts 为文章 id 列表，顺序即推荐阅读顺序
+// 新文章写完后，把 id 加到合适的分类中即可；一篇文章可属于多个分类
+const guideCategories = [
+    {
+        name: "系统启动与构建",
+        desc: "从 AOSP 源码编译到系统启动，建立全链路视角",
+        posts: ["aosp-build-system-guide"]
+    },
+    {
+        name: "通信机制",
+        desc: "Binder、Handler 等 Android 核心通信方式",
+        posts: ["binder-death-recipient-memory-leak"]
+    },
+    {
+        name: "系统服务",
+        desc: "WMS、AMS、PMS、Input 等核心服务的运行机制",
+        posts: ["wms-window-visibility-optimization", "input-system-dispatcher-analysis"]
+    },
+    {
+        name: "稳定性",
+        desc: "ANR、Crash、内存泄漏的治理方法论与实战",
+        posts: ["anr-watchdog-deep-dive", "binder-death-recipient-memory-leak"]
+    },
+    {
+        name: "性能优化",
+        desc: "Trace 采集分析与卡顿根因定位",
+        posts: ["perfetto-systrace-analysis"]
+    }
+];
+
 // 辅助函数：获取所有标签及数量
 function getAllTags() {
     const tagMap = {};

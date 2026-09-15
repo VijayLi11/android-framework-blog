@@ -244,9 +244,13 @@
             return;
         }
         
+        // 置顶文章排在最前（同组内保持原顺序）
+        posts = [...posts].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+        
         container.innerHTML = posts.map(post => `
             <article class="post-card" data-id="${post.id}">
                 <div class="post-meta">
+                    ${post.pinned ? '<span class="post-pin">📌 置顶</span>' : ''}
                     <span class="post-date">${post.date}</span>
                     <div class="post-tags">
                         ${post.tags.map(t => `<span class="post-tag post-tag-btn" title="点击筛选该标签">${t}</span>`).join('')}

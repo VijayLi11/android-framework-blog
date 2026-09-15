@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>标签 | Android Framework Blog</title>
-    <meta name="description" content="按标签浏览 Android 技术文章">
+    <title>导读 | Android Framework Blog</title>
+    <meta name="description" content="Android Framework 学习路径：按主题分类的推荐阅读顺序">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -18,8 +18,8 @@
         </div>
         <div class="nav-links">
             <a href="index.html">首页</a>
-            <a href="tags.html" class="active">标签</a>
-            <a href="guide.html">导读</a>
+            <a href="tags.html">标签</a>
+            <a href="guide.html" class="active">导读</a>
             <a href="about.html">关于</a>
             <button class="theme-toggle" id="themeToggle" title="切换主题">
                 <span class="theme-icon">🌙</span>
@@ -29,20 +29,13 @@
     </nav>
 
     <main class="container">
-        <section class="tags-page">
+        <section class="guide-page">
             <h1 class="page-title">
-                <span class="page-icon">🏷️</span>
-                标签云
+                <span class="page-icon">📖</span>
+                导读
             </h1>
-            <div class="tags-all" id="tagsAll"></div>
-        </section>
-
-        <section class="tag-posts" id="tagPostsSection" style="display:none;">
-            <h2 class="section-title">
-                <span class="tag-indicator" id="activeTag"></span>
-                下的文章
-            </h2>
-            <div class="posts-grid" id="tagPostsList"></div>
+            <p class="guide-intro">按主题整理的学习路径，同一分类内建议按顺序阅读。</p>
+            <div id="guideList"></div>
         </section>
     </main>
 
@@ -54,6 +47,6 @@
 
     <script src="js/posts.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/tags.js"></script>
+    <script src="js/guide.js"></script>
 </body>
 </html>
