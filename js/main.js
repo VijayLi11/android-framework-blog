@@ -178,8 +178,10 @@
     }
 
     // ========================
-    // 渲染标签云
+    // 渲染标签云 + 标签筛选
     // ========================
+    let currentTagFilter = null;
+    
     function renderTagsCloud() {
         const container = document.getElementById('tagsCloud');
         if (!container || typeof getAllTags !== 'function') return;
@@ -189,11 +191,45 @@
         
         container.innerHTML = tags.map(([tag, count]) => {
             const size = 0.85 + (count / maxCount) * 0.4;
-            return `<a href="tags.html?tag=${encodeURIComponent(tag)}" class="tag-item" style="font-size:${size}rem">
+            const active = tag === currentTagFilter ? ' active' : '';
+            return `<button type="button" class="tag-item${active}" data-tag="${escapeHtml(tag)}" title="点击筛选该标签" style="font-size:${size}rem">
                 ${tag}
                 <span class="tag-count">${count}</span>
-            </a>`;
+            </button>`;
         }).join('');
+        
+        // 点击标签：原地筛选文章，再次点击恢复全部
+        container.querySelectorAll('.tag-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const tag = item.getAttribute('data-tag');
+                applyTagFilter(tag === currentTagFilter ? null : tag);
+            });
+        });
+    }
+    
+    function applyTagFilter(tag) {
+        currentTagFilter = tag;
+        renderTagsCloud();
+        
+        if (typeof postsData === 'undefined') return;
+        const bar = document.getElementById('filterBar');
+        
+        if (tag) {
+            renderPostsList(postsData.filter(p => p.tags.includes(tag)));
+            if (bar) {
+                bar.hidden = false;
+                bar.innerHTML = `🏷️ 已筛选：<strong>${escapeHtml(tag)}</strong> <button type="button" class="filter-clear" id="filterClear">✕ 清除筛选</button>`;
+                document.getElementById('filterClear').addEventListener('click', () => applyTagFilter(null));
+            }
+            const section = document.querySelector('.posts-section');
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            renderPostsList(postsData);
+            if (bar) {
+                bar.hidden = true;
+                bar.innerHTML = '';
+            }
+        }
     }
 
     // ========================
