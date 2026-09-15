@@ -1,8 +1,0 @@
-# 部署到 Cloudflare Workers 静态资源时排除以下文件/目录
-node_modules
-.git
-server.js
-start.bat
-start.sh
-package.json
-package-lock.json

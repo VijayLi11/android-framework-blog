@@ -26,44 +26,34 @@ blog/
 ├── about.html          # 关于我
 ├── write.html          # 文章编辑器（Markdown + 图片上传）
 ├── rss.xml             # RSS 订阅
-├── server.js           # Node.js 静态文件服务器
-├── start.bat           # Windows 一键启动
-├── start.sh            # Linux/Mac 一键启动
-├── package.json
+├── favicon.svg         # 站点图标
+├── DEPLOY.md           # 部署与维护手册
 ├── css/
-│   └── style.css       # 主题样式
+│   ├── style.css       # 主题样式
+│   └── vendor/         # Prism 主题（本地化）
 └── js/
     ├── posts.js        # 文章数据（在这里粘贴新文章）
     ├── main.js         # 核心逻辑
     ├── post.js         # 文章页逻辑
-    └── tags.js         # 标签页逻辑
+    ├── tags.js         # 标签页逻辑
+    └── vendor/         # Prism / Marked（本地化）
 ```
 
 ## 快速开始
 
 ### 本地预览
 
-**方式1：双击启动（Windows）**
-```bash
-double-click start.bat
-```
-
-**方式2：命令行启动**
-```bash
-cd blog
-node server.js        # 默认端口 8080
-node server.js 3000   # 指定端口
-```
-
-**方式3：VS Code Live Server**
+**方式1：VS Code Live Server（推荐）**
 安装 Live Server 插件，右键 `index.html` → Open with Live Server
 
-### 部署到 GitHub Pages
+**方式2：直接打开**
+双击 `index.html`（文章详情页依赖 URL 参数，建议用 Live Server）
 
-1. 创建仓库 `yourname.github.io`
-2. 将 `blog/` 内所有文件 push 到仓库
-3. Settings > Pages 中启用 GitHub Pages
-4. 访问 `https://yourname.github.io/`
+### 线上地址
+
+已部署到 GitHub Pages：**https://vijayli11.github.io/android-framework-blog/**
+
+`git push` 到 `main` 分支后自动重新部署。详细部署过程与日常维护流程见 [DEPLOY.md](DEPLOY.md)。
 
 ## 写文章（三种方式）
 
