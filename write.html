@@ -970,6 +970,7 @@
                 
                 <div class="btn-group">
                     <button class="btn btn-primary" onclick="generateCode()">📋 生成代码</button>
+                    <button class="btn btn-success" onclick="saveToPostsJs()">💾 保存到 posts.js</button>
                     <button class="btn btn-secondary" onclick="previewInNewTab()">🔍 新标签页预览</button>
                     <button class="btn btn-secondary" onclick="saveToStorage()">💾 保存草稿</button>
                     <button class="btn btn-secondary" onclick="loadFromStorage()">📂 读取草稿</button>
@@ -1508,7 +1509,8 @@
         }
         
         // ========== 生成代码 ==========
-        function generateCode() {
+        // 校验表单并更新到 sortedPosts，返回 postData；校验失败返回 null
+        function upsertCurrentPost() {
             const id = document.getElementById('postId').value.trim();
             const title = document.getElementById('postTitle').value.trim();
             const date = document.getElementById('postDate').value;
@@ -1518,7 +1520,7 @@
             
             if (!id || !title || !rawContent) {
                 showToast('❌ 请填写文章 ID、标题和正文');
-                return;
+                return null;
             }
             
             // 更新或添加到 sortedPosts
@@ -1538,7 +1540,7 @@
                 // 新建文章，插入到最前面
                 const existingIndex = sortedPosts.findIndex(p => p.id === id);
                 if (existingIndex !== -1) {
-                    if (!confirm('⚠️ 文章 ID 已存在，是否覆盖？')) return;
+                    if (!confirm('⚠️ 文章 ID 已存在，是否覆盖？')) return null;
                     sortedPosts[existingIndex] = postData;
                 } else {
                     sortedPosts.unshift(postData);
@@ -1548,6 +1550,12 @@
             
             editingPostId = id;
             renderSortList();
+            return postData;
+        }
+        
+        function generateCode() {
+            const postData = upsertCurrentPost();
+            if (!postData) return;
             
             // 生成代码
             const code = formatPostCode(postData);
@@ -1593,7 +1601,7 @@
         }
         
         function escapeBackticks(str) {
-            return str.replace(/\\/g, '\\\\').replace(/\`/g, '\\`');
+            return str.replace(/\\/g, '\\\\').replace(/\`/g, '\\`').replace(/\$\{/g, '\\${');
         }
         
         function copyCode() {
@@ -1619,6 +1627,93 @@
             a.click();
             URL.revokeObjectURL(url);
             showToast('💾 文件已下载');
+        }
+        
+        // ========== 直接保存到 posts.js ==========
+        // 依赖浏览器 File System Access API（Chrome / Edge）
+        // 首次使用需选择一次 js/posts.js 文件，之后自动记住
+        const POSTS_BEGIN_MARK = '// <<<POSTS-BEGIN>>>';
+        const POSTS_END_MARK = '// <<<POSTS-END>>>';
+        
+        function openHandleDB() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open('blog-editor-handles', 1);
+                req.onupgradeneeded = () => req.result.createObjectStore('handles');
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+        
+        async function getStoredHandle(key) {
+            const db = await openHandleDB();
+            return new Promise((resolve, reject) => {
+                const req = db.transaction('handles', 'readonly').objectStore('handles').get(key);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+        
+        async function storeHandle(key, handle) {
+            const db = await openHandleDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction('handles', 'readwrite');
+                tx.objectStore('handles').put(handle, key);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+        
+        async function getPostsFileHandle() {
+            let handle = null;
+            try { handle = await getStoredHandle('postsJs'); } catch (e) { /* 忽略读取失败 */ }
+            
+            if (handle) {
+                const opts = { mode: 'readwrite' };
+                if ((await handle.queryPermission(opts)) === 'granted') return handle;
+                if ((await handle.requestPermission(opts)) === 'granted') return handle;
+            }
+            
+            const [picked] = await window.showOpenFilePicker({
+                types: [{ description: 'posts.js', accept: { 'text/javascript': ['.js'] } }],
+                multiple: false
+            });
+            await storeHandle('postsJs', picked);
+            return picked;
+        }
+        
+        async function saveToPostsJs() {
+            const postData = upsertCurrentPost();
+            if (!postData) return;
+            
+            if (!window.showOpenFilePicker) {
+                showToast('❌ 当前浏览器不支持直接写文件，请用 Chrome/Edge 打开，或使用「生成代码」手动粘贴');
+                return;
+            }
+            
+            try {
+                const handle = await getPostsFileHandle();
+                const text = await (await handle.getFile()).text();
+                
+                const begin = text.indexOf(POSTS_BEGIN_MARK);
+                const end = text.indexOf(POSTS_END_MARK);
+                if (begin === -1 || end === -1 || begin > end) {
+                    showToast('❌ posts.js 中未找到文章区标记，请检查文件');
+                    return;
+                }
+                
+                const entries = sortedPosts.map(p => formatPostCode(p, 4)).join(',\n');
+                const newText = text.slice(0, begin + POSTS_BEGIN_MARK.length) + '\n' + entries + '\n' + text.slice(end);
+                
+                const writable = await handle.createWritable();
+                await writable.write(newText);
+                await writable.close();
+                
+                showToast('✅ 已保存到 posts.js！双击 publish.bat 发布');
+            } catch (e) {
+                if (e.name !== 'AbortError') {
+                    showToast('❌ 保存失败：' + e.message);
+                }
+            }
         }
         
         // ========== 草稿管理 ==========

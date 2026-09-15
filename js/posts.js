@@ -3,6 +3,7 @@
  * 按时间倒序排列
  */
 const postsData = [
+// <<<POSTS-BEGIN>>>
     {
         id: "anr-watchdog-deep-dive",
         title: "深入解析 ANR Watchdog：从原理到线上防控体系",
@@ -880,6 +881,7 @@ adb shell input tap 500 500
 adb shell input swipe 100 500 900 500 200</code></pre>
         `
     }
+// <<<POSTS-END>>>
 ];
 
 // 辅助函数：获取所有标签及数量
