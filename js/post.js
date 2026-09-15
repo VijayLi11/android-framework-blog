@@ -80,12 +80,14 @@
         const body = document.getElementById('postBody');
         const toc = document.getElementById('tocContent');
         const sidebar = document.getElementById('tocSidebar');
+        const toggle = document.getElementById('tocToggle');
         
         if (!body || !toc || !sidebar) return;
         
         const headings = body.querySelectorAll('h2, h3');
         if (headings.length === 0) {
-            sidebar.style.display = 'none';
+            sidebar.classList.remove('open');
+            if (toggle) toggle.classList.remove('visible');
             return;
         }
         
@@ -100,10 +102,30 @@
             return `<a href="#${heading.id}" class="${level}" data-target="${heading.id}">${heading.textContent}</a>`;
         }).join('');
         
-        // 大屏显示 TOC
-        if (window.innerWidth > 1200) {
-            sidebar.classList.add('visible');
+        // 抽屉式目录：默认收起，点击浮动按钮弹出
+        function closeTOC() {
+            sidebar.classList.remove('open');
+            if (toggle) toggle.classList.add('visible');
         }
+        
+        if (toggle) {
+            toggle.classList.add('visible');
+            toggle.addEventListener('click', () => {
+                sidebar.classList.add('open');
+                toggle.classList.remove('visible');
+            });
+        }
+        
+        // 滚动页面时自动收起
+        window.addEventListener('scroll', () => {
+            if (sidebar.classList.contains('open')) closeTOC();
+        }, { passive: true });
+        
+        // 点击目录外区域收起
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#tocToggle')) return;
+            if (sidebar.classList.contains('open') && !sidebar.contains(e.target)) closeTOC();
+        });
         
         // 平滑滚动
         toc.querySelectorAll('a').forEach(a => {
@@ -111,6 +133,7 @@
                 e.preventDefault();
                 const target = document.getElementById(a.getAttribute('href').slice(1));
                 if (target) {
+                    closeTOC();
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });

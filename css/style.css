@@ -206,10 +206,10 @@ body {
     z-index: 1;
 }
 
-/* Hero Section */
+/* Hero Section（精简版：无头像/标签，保留定位语+统计） */
 .hero {
     text-align: center;
-    padding: 60px 0 40px;
+    padding: 32px 0 16px;
 }
 
 .hero-avatar {
@@ -252,9 +252,9 @@ body {
 }
 
 .hero-title {
-    font-size: 2.2rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     min-height: 1.2em;
 }
 
@@ -292,8 +292,8 @@ body {
 .hero-stats {
     display: flex;
     justify-content: center;
-    gap: 50px;
-    margin-top: 30px;
+    gap: 40px;
+    margin-top: 12px;
 }
 
 .stat {
@@ -302,7 +302,7 @@ body {
 
 .stat-num {
     display: block;
-    font-size: 2rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--accent);
     font-family: var(--font-mono);
@@ -747,11 +747,47 @@ body {
     z-index: 100;
     max-height: calc(100vh - 140px);
     overflow-y: auto;
-    display: none;
+    /* 抽屉式：默认收起到屏幕右侧外 */
+    transform: translateX(calc(100% + 40px));
+    visibility: hidden;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s;
 }
 
-.toc-sidebar.visible {
-    display: block;
+.toc-sidebar.open {
+    transform: translateX(0);
+    visibility: visible;
+    opacity: 1;
+}
+
+/* TOC 浮动开关按钮 */
+.toc-toggle {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--accent);
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 99;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.toc-toggle.visible {
+    display: flex;
+}
+
+.toc-toggle:hover {
+    border-color: var(--accent);
+    transform: translateY(-50%) scale(1.1);
 }
 
 .toc-header {
@@ -1177,10 +1213,6 @@ body {
 
     .post-nav {
         grid-template-columns: 1fr;
-    }
-
-    .toc-sidebar {
-        display: none !important;
     }
 
     .skill-grid {
