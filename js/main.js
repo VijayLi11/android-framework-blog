@@ -257,7 +257,6 @@
                 <div class="post-stats">
                     <span class="post-stat">⏱️ ${post.readTime}</span>
                     <span class="post-stat">🏷️ ${post.tags.length} 个标签</span>
-                    <a href="write.html?id=${post.id}" class="post-stat" style="margin-left:auto;color:var(--accent);text-decoration:none;" onclick="event.stopPropagation()">✏️ 编辑</a>
                 </div>
             </article>
         `).join('');
