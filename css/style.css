@@ -595,6 +595,17 @@ button.tag-item {
     font-weight: 500;
 }
 
+/* 首页文章卡片上的可点击标签 */
+.post-tag-btn {
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.post-tag-btn:hover {
+    background: var(--accent);
+    color: #0a0a0f;
+}
+
 .post-title {
     font-size: 1.25rem;
     font-weight: 700;

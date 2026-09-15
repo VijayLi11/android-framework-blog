@@ -249,7 +249,7 @@
                 <div class="post-meta">
                     <span class="post-date">${post.date}</span>
                     <div class="post-tags">
-                        ${post.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}
+                        ${post.tags.map(t => `<span class="post-tag post-tag-btn" title="点击筛选该标签">${t}</span>`).join('')}
                     </div>
                 </div>
                 <h3 class="post-title">${post.title}</h3>
@@ -262,12 +262,20 @@
             </article>
         `).join('');
         
-        // 绑定点击事件（排除编辑按钮）
+        // 绑定点击事件（排除编辑按钮和标签）
         container.querySelectorAll('.post-card').forEach(card => {
             card.addEventListener('click', (e) => {
-                if (e.target.closest('a')) return;
+                if (e.target.closest('a') || e.target.closest('.post-tag-btn')) return;
                 const id = card.getAttribute('data-id');
                 window.location.href = `post.html?id=${id}`;
+            });
+        });
+        
+        // 卡片上的标签：点击筛选对应文章
+        container.querySelectorAll('.post-tag-btn').forEach(tagEl => {
+            tagEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                applyTagFilter(tagEl.textContent);
             });
         });
     }
