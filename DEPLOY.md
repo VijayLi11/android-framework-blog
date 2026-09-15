@@ -77,12 +77,9 @@ git push
 
 ## 四、可选增强
 
-### 开启 Giscus 评论
+### Giscus 评论（已启用 ✅）
 
-1. 仓库 Settings → General → Features → 勾选 **Discussions**
-2. 安装 [giscus](https://github.com/apps/giscus) App 到本仓库
-3. 打开 [giscus.app/zh-CN](https://giscus.app/zh-CN)，输入仓库名，生成配置
-4. 把生成的参数填入 `post.html` 中被注释的 Giscus 代码段，取消注释，push
+已于 2026-09-15 启用，配置在 `post.html` 的 `comments-section`。评论数据存放在仓库的 GitHub Discussions（Announcements 分类）。如需关闭，将 `post.html` 中该 section 注释掉即可。
 
 ### 自定义域名（加速国内访问）
 
