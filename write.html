@@ -1766,7 +1766,9 @@
                 
                 showToast('✅ 导读已保存到 posts.js！双击 publish.bat 发布');
             } catch (e) {
-                if (e.name !== 'AbortError') {
+                if (e.name === 'AbortError') {
+                    showToast('⚠️ 已取消文件选择，未保存');
+                } else {
                     showToast('❌ 保存失败：' + e.message);
                 }
             }
@@ -1818,6 +1820,7 @@
                 if ((await handle.requestPermission(opts)) === 'granted') return handle;
             }
             
+            showToast('📂 请在弹窗中选择本项目的 js/posts.js 文件');
             const [picked] = await window.showOpenFilePicker({
                 types: [{ description: 'posts.js', accept: { 'text/javascript': ['.js'] } }],
                 multiple: false
@@ -1855,7 +1858,9 @@
                 
                 showToast('✅ 已保存到 posts.js！双击 publish.bat 发布');
             } catch (e) {
-                if (e.name !== 'AbortError') {
+                if (e.name === 'AbortError') {
+                    showToast('⚠️ 已取消文件选择，未保存');
+                } else {
                     showToast('❌ 保存失败：' + e.message);
                 }
             }
