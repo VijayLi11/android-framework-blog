@@ -115,20 +115,22 @@
 
 ```
 blog/
-├── index.html          # 首页（文章列表 + 搜索 + 标签云）
-├── post.html           # 文章详情页（目录 + 代码高亮，评论可选）
-├── tags.html           # 标签云页
+├── index.html          # 首页（文章列表 + 搜索 + 标签筛选）
+├── post.html           # 文章详情页（目录抽屉 + 代码高亮 + 评论）
+├── guide.html          # 导读页（按分类的学习路径）
 ├── about.html          # 关于我
 ├── write.html          # 写作编辑器（本地使用，线上不展示入口）
+├── write.bat           # 一键打开编辑器
+├── publish.bat         # 一键提交推送发布
 ├── rss.xml             # RSS 订阅
 ├── favicon.svg         # 站点图标
 ├── css/
 │   ├── style.css       # 主题样式
 │   └── vendor/         # Prism 主题（本地化）
 └── js/
-    ├── posts.js        # 文章数据（新文章加在数组最前）
+    ├── posts.js        # 文章数据 + 导读分类（guideCategories）
     ├── main.js         # 核心逻辑
     ├── post.js         # 文章页逻辑
-    ├── tags.js         # 标签页逻辑
+    ├── guide.js        # 导读页逻辑
     └── vendor/         # Prism / Marked（本地化，无外部 CDN 依赖）
 ```

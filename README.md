@@ -22,7 +22,7 @@
 blog/
 ├── index.html          # 首页（文章列表 + 搜索 + 标签云）
 ├── post.html           # 文章详情页（目录 + 代码高亮 + 评论）
-├── tags.html           # 标签云页
+├── guide.html          # 导读页（按分类的学习路径）
 ├── about.html          # 关于我
 ├── write.html          # 文章编辑器（Markdown + 图片上传）
 ├── rss.xml             # RSS 订阅
@@ -35,7 +35,7 @@ blog/
     ├── posts.js        # 文章数据（在这里粘贴新文章）
     ├── main.js         # 核心逻辑
     ├── post.js         # 文章页逻辑
-    ├── tags.js         # 标签页逻辑
+    ├── guide.js        # 导读页逻辑
     └── vendor/         # Prism / Marked（本地化）
 ```
 

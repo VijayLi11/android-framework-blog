@@ -50,7 +50,7 @@
                     <span class="post-date">📅 ${post.date}</span>
                     <span class="post-stat">⏱️ ${post.readTime}</span>
                     <div class="post-tags">
-                        ${post.tags.map(t => `<a href="tags.html?tag=${encodeURIComponent(t)}" class="post-tag">${t}</a>`).join('')}
+                        ${post.tags.map(t => `<a href="index.html?tag=${encodeURIComponent(t)}" class="post-tag">${t}</a>`).join('')}
                     </div>
                     <a href="write.html?id=${post.id}" class="post-stat" style="margin-left:auto;color:var(--accent);text-decoration:none;">✏️ 编辑</a>
                 </div>

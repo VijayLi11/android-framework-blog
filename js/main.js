@@ -409,6 +409,10 @@
                 renderPostsList(postsData);
             }
             updateStats();
+            
+            // 支持 URL 参数直达标签筛选（如 index.html?tag=Binder，文章页标签点击跳转过来）
+            const urlTag = new URLSearchParams(window.location.search).get('tag');
+            if (urlTag) applyTagFilter(urlTag);
         }
         
         // 绑定主题切换按钮
