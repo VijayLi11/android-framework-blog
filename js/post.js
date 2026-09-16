@@ -91,6 +91,13 @@
         s.setAttribute('crossorigin', 'anonymous');
         s.async = true;
         container.appendChild(s);
+        
+        // 兜底：8 秒后评论框仍未出现，显示直达 GitHub 评论的链接
+        setTimeout(() => {
+            if (!container.querySelector('iframe')) {
+                container.innerHTML = '<p style="color:var(--text-muted);">⚠️ 评论组件加载失败，可能被浏览器拦截。👉 <a href="https://github.com/VijayLi11/android-framework-blog/issues" target="_blank" style="color:var(--accent);">去 GitHub Issues 直接评论</a></p>';
+            }
+        }, 8000);
     }
 
     function generateTOC() {
