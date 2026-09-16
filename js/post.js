@@ -92,6 +92,16 @@
         s.async = true;
         container.appendChild(s);
         
+        // iframe 加载成功后移除“加载中”占位
+        const observer = new MutationObserver(() => {
+            if (container.querySelector('iframe')) {
+                const placeholder = container.querySelector('p');
+                if (placeholder) placeholder.remove();
+                observer.disconnect();
+            }
+        });
+        observer.observe(container, { childList: true, subtree: true });
+        
         // 兜底：8 秒后评论框仍未出现，显示直达 GitHub 评论的链接
         setTimeout(() => {
             if (!container.querySelector('iframe')) {
