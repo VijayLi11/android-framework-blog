@@ -912,6 +912,16 @@ const guideCategories = [
         name: "性能优化",
         desc: "Trace 采集分析与卡顿根因定位",
         posts: ["perfetto-systrace-analysis"]
+    },
+    {
+        name: "四大组件",
+        desc: "四大组件相关",
+        posts: ["anr-watchdog-deep-dive"]
+    },
+    {
+        name: "进程管理",
+        desc: "framework层的进程管理，包括adj的计算，lmkd的查杀逻辑",
+        posts: []
     }
 // <<<GUIDE-END>>>
 ];
