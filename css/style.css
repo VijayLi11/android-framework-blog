@@ -409,7 +409,7 @@ body {
 
 /* Search */
 .search-section {
-    margin: 40px 0;
+    margin: 16px 0 24px;
 }
 
 .search-box {
@@ -540,6 +540,16 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+}
+
+/* 首页紧凑标签（紧跟搜索框） */
+.tags-compact {
+    margin-top: 12px;
+    gap: 8px;
+}
+
+.tags-compact .tag-item {
+    padding: 4px 12px;
 }
 
 .tag-item {
