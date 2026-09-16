@@ -1017,6 +1017,17 @@
                 <button class="btn btn-secondary" onclick="downloadCode()">💾 下载文件</button>
             </div>
         </div>
+        
+        <!-- 导读分类管理 -->
+        <div class="editor-panel" style="margin-top:20px;">
+            <div class="panel-title">📖 导读分类管理（guide.html 页面内容）</div>
+            <div id="guideEditor"></div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="addGuideCategory()">➕ 新增分类</button>
+                <button class="btn btn-success" onclick="saveGuideToPostsJs()">💾 保存导读到 posts.js</button>
+            </div>
+            <p style="margin-top:10px;color:var(--text-muted);font-size:0.85rem;">💡 勾选文章将其加入分类；一篇文章可属于多个分类；分类顺序（↑↓ 调整）和勾选顺序即导读页展示顺序。</p>
+        </div>
     </main>
 
     <div class="toast" id="toast"></div>
@@ -1049,6 +1060,7 @@
             }
             
             renderSortList();
+            initGuideEditor();
             loadTagSuggestions();
             bindPreview();
             bindTagInput();
@@ -1558,6 +1570,7 @@
             
             editingPostId = id;
             renderSortList();
+            renderGuideEditor();
             return postData;
         }
         
@@ -1639,11 +1652,133 @@
             showToast('💾 文件已下载');
         }
         
+        // ========== 导读分类管理 ==========
+        let guideCats = [];
+        
+        function initGuideEditor() {
+            guideCats = (typeof guideCategories !== 'undefined')
+                ? JSON.parse(JSON.stringify(guideCategories))
+                : [];
+            renderGuideEditor();
+        }
+        
+        function escapeAttr(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+        
+        function renderGuideEditor() {
+            const container = document.getElementById('guideEditor');
+            if (!container) return;
+            
+            if (!guideCats.length) {
+                container.innerHTML = '<p style="color:var(--text-muted);padding:10px 0;">暂无分类，点击下方「新增分类」创建。</p>';
+                return;
+            }
+            
+            container.innerHTML = guideCats.map((cat, ci) => `
+                <div style="border:1px solid var(--border-color);border-radius:8px;padding:14px;margin-bottom:14px;background:var(--bg-card);">
+                    <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap;">
+                        <span style="color:var(--accent);font-weight:700;font-family:monospace;">${ci + 1}.</span>
+                        <input type="text" value="${escapeAttr(cat.name)}" placeholder="分类名称" style="flex:1;min-width:140px;" onchange="updateGuideField(${ci}, 'name', this.value)">
+                        <input type="text" value="${escapeAttr(cat.desc)}" placeholder="分类简介" style="flex:2;min-width:200px;" onchange="updateGuideField(${ci}, 'desc', this.value)">
+                        <button class="btn btn-secondary" style="padding:4px 10px;" onclick="moveGuideCategory(${ci}, -1)" title="上移">↑</button>
+                        <button class="btn btn-secondary" style="padding:4px 10px;" onclick="moveGuideCategory(${ci}, 1)" title="下移">↓</button>
+                        <button class="btn btn-danger" style="padding:4px 10px;" onclick="removeGuideCategory(${ci})" title="删除分类">🗑️</button>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                        ${sortedPosts.map(p => `
+                        <label style="display:inline-flex;align-items:center;gap:4px;font-size:0.85rem;color:var(--text-secondary);cursor:pointer;">
+                            <input type="checkbox" ${cat.posts.includes(p.id) ? 'checked' : ''} onchange="toggleGuidePost(${ci}, '${p.id}', this.checked)">
+                            ${escapeAttr(p.title)}
+                        </label>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateGuideField(index, field, value) {
+            guideCats[index][field] = value.trim();
+        }
+        
+        function moveGuideCategory(index, dir) {
+            const target = index + dir;
+            if (target < 0 || target >= guideCats.length) return;
+            const tmp = guideCats[index];
+            guideCats[index] = guideCats[target];
+            guideCats[target] = tmp;
+            renderGuideEditor();
+        }
+        
+        function removeGuideCategory(index) {
+            if (!confirm('确定删除分类「' + guideCats[index].name + '」？（文章本身不受影响）')) return;
+            guideCats.splice(index, 1);
+            renderGuideEditor();
+        }
+        
+        function addGuideCategory() {
+            guideCats.push({ name: '新分类', desc: '', posts: [] });
+            renderGuideEditor();
+        }
+        
+        function toggleGuidePost(catIndex, postId, checked) {
+            const posts = guideCats[catIndex].posts;
+            const i = posts.indexOf(postId);
+            if (checked && i === -1) posts.push(postId);
+            if (!checked && i !== -1) posts.splice(i, 1);
+        }
+        
+        async function saveGuideToPostsJs() {
+            for (const c of guideCats) {
+                if (!c.name.trim()) {
+                    showToast('❌ 有分类名称为空，请填写');
+                    return;
+                }
+            }
+            
+            if (!window.showOpenFilePicker) {
+                showToast('❌ 当前浏览器不支持直接写文件，请用 Chrome/Edge');
+                return;
+            }
+            
+            try {
+                const handle = await getPostsFileHandle();
+                const text = await (await handle.getFile()).text();
+                
+                const begin = text.indexOf(GUIDE_BEGIN_MARK);
+                const end = text.indexOf(GUIDE_END_MARK);
+                if (begin === -1 || end === -1 || begin > end) {
+                    showToast('❌ posts.js 中未找到导读区标记，请检查文件');
+                    return;
+                }
+                
+                const entries = guideCats.map(c =>
+`    {
+        name: ${JSON.stringify(c.name)},
+        desc: ${JSON.stringify(c.desc)},
+        posts: [${c.posts.map(p => JSON.stringify(p)).join(', ')}]
+    }`).join(',\n');
+                
+                const newText = text.slice(0, begin + GUIDE_BEGIN_MARK.length) + '\n' + entries + '\n' + text.slice(end);
+                
+                const writable = await handle.createWritable();
+                await writable.write(newText);
+                await writable.close();
+                
+                showToast('✅ 导读已保存到 posts.js！双击 publish.bat 发布');
+            } catch (e) {
+                if (e.name !== 'AbortError') {
+                    showToast('❌ 保存失败：' + e.message);
+                }
+            }
+        }
+        
         // ========== 直接保存到 posts.js ==========
         // 依赖浏览器 File System Access API（Chrome / Edge）
         // 首次使用需选择一次 js/posts.js 文件，之后自动记住
         const POSTS_BEGIN_MARK = '// <<<POSTS-BEGIN>>>';
         const POSTS_END_MARK = '// <<<POSTS-END>>>';
+        const GUIDE_BEGIN_MARK = '// <<<GUIDE-BEGIN>>>';
+        const GUIDE_END_MARK = '// <<<GUIDE-END>>>';
         
         function openHandleDB() {
             return new Promise((resolve, reject) => {

@@ -887,6 +887,7 @@ adb shell input swipe 100 500 900 500 200</code></pre>
 // 导读分类（guide.html 使用）：name 分类名，desc 简介，posts 为文章 id 列表，顺序即推荐阅读顺序
 // 新文章写完后，把 id 加到合适的分类中即可；一篇文章可属于多个分类
 const guideCategories = [
+// <<<GUIDE-BEGIN>>>
     {
         name: "系统启动与构建",
         desc: "从 AOSP 源码编译到系统启动，建立全链路视角",
@@ -912,6 +913,7 @@ const guideCategories = [
         desc: "Trace 采集分析与卡顿根因定位",
         posts: ["perfetto-systrace-analysis"]
     }
+// <<<GUIDE-END>>>
 ];
 
 // 辅助函数：获取所有标签及数量
