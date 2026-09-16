@@ -14,20 +14,21 @@
             const items = cat.posts
                 .map(id => typeof getPostById === 'function' ? getPostById(id) : null)
                 .filter(Boolean);
-            if (!items.length) return '';
+
+            const itemsHtml = items.length
+                ? items.map((p, j) => `
+                    <a class="guide-item" href="post.html?id=${p.id}">
+                        <span class="guide-item-num">${j + 1}.</span>
+                        <span class="guide-item-title">${p.title}</span>
+                        <span class="guide-item-meta">${p.date} · ⏱️ ${p.readTime}</span>
+                    </a>`).join('')
+                : '<p class="guide-empty">暂无文章，敬请期待 🚧</p>';
 
             return `
             <div class="guide-cat">
                 <h2 class="guide-cat-title"><span class="guide-num">${i + 1}</span>${cat.name}</h2>
                 <p class="guide-cat-desc">${cat.desc}</p>
-                <div class="guide-items">
-                    ${items.map((p, j) => `
-                    <a class="guide-item" href="post.html?id=${p.id}">
-                        <span class="guide-item-num">${j + 1}.</span>
-                        <span class="guide-item-title">${p.title}</span>
-                        <span class="guide-item-meta">${p.date} · ⏱️ ${p.readTime}</span>
-                    </a>`).join('')}
-                </div>
+                <div class="guide-items">${itemsHtml}</div>
             </div>`;
         }).join('');
     }
