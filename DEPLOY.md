@@ -77,9 +77,14 @@
 
 ## 四、可选增强
 
-### Giscus 评论（已启用 ✅）
+### 评论（Utterances，已启用 ✅）
 
-已于 2026-09-15 启用，配置在 `post.html` 的 `comments-section`。评论数据存放在仓库的 GitHub Discussions（Announcements 分类）。如需关闭，将 `post.html` 中该 section 注释掉即可。
+- 方案：Utterances（基于 GitHub Issues），按文章标题对应一个 Issue 作为评论区
+- 为什么不用 Giscus：giscus.app 域名在国内无法访问；Utterances（utteranc.es）国内可正常访问
+- 评论数据存放在仓库 Issues（标签 `💬 blog-comment`）：https://github.com/VijayLi11/android-framework-blog/issues
+- 配置位置：`js/post.js` 的 `initComments()` + `post.html` 的 `commentsContainer`
+- 前提：仓库需安装 [utterances](https://github.com/apps/utterances) App 并保持 Issues 开启
+- 如需关闭：注释 `post.js` 中的 `initComments()` 调用即可
 
 ### 自定义域名（加速国内访问）
 

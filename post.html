@@ -39,26 +39,13 @@
         <!-- Post Navigation -->
         <div class="post-nav" id="postNav"></div>
 
-        <!-- Comments（Giscus，基于 GitHub Discussions） -->
+        <!-- Comments（Utterances，基于 GitHub Issues） -->
         <section class="comments-section">
             <h3>💬 评论</h3>
-            <div class="giscus-container">
-                <script src="https://giscus.app/client.js"
-                    data-repo="VijayLi11/android-framework-blog"
-                    data-repo-id="R_kgDOUaMgFw"
-                    data-category="Announcements"
-                    data-category-id="DIC_kwDOUaMgF84DFoKD"
-                    data-mapping="pathname"
-                    data-strict="0"
-                    data-reactions-enabled="1"
-                    data-emit-metadata="0"
-                    data-input-position="bottom"
-                    data-theme="preferred_color_scheme"
-                    data-lang="zh-CN"
-                    crossorigin="anonymous"
-                    async>
-                </script>
-            </div>
+            <div id="commentsContainer"></div>
+            <p class="giscus-hint">
+                💡 评论需登录 GitHub 账号，评论数据保存在仓库 Issues 中。
+            </p>
         </section>
     </main>
 

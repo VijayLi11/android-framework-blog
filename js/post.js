@@ -73,6 +73,24 @@
         
         // 滚动监听
         initScrollSpy();
+        
+        // 加载评论（Utterances，在标题设置后注入，确保按文章标题对应 Issue）
+        initComments();
+    }
+    
+    function initComments() {
+        const container = document.getElementById('commentsContainer');
+        if (!container) return;
+        
+        const s = document.createElement('script');
+        s.src = 'https://utteranc.es/client.js';
+        s.setAttribute('repo', 'VijayLi11/android-framework-blog');
+        s.setAttribute('issue-term', 'title');
+        s.setAttribute('label', '💬 blog-comment');
+        s.setAttribute('theme', 'preferred-color-scheme');
+        s.setAttribute('crossorigin', 'anonymous');
+        s.async = true;
+        container.appendChild(s);
     }
 
     function generateTOC() {
