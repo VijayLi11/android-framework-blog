@@ -884,16 +884,16 @@ adb shell input swipe 100 500 900 500 200</code></pre>
 // <<<POSTS-END>>>
 ];
 
-// 导读页面配置（guide.html 使用）：title 页面标题，intro 标题下的介绍语
+// 导读页面配置（guide.html 使用）：title 页面标题，intro 标题下的介绍语（支持 Markdown）
 // 可在 guide.html 页面（本地打开）点击「编辑导读」就地修改
 const guidePageConfig = {
 // <<<GUIDE-PAGE-BEGIN>>>
     title: "导读",
-    intro: "按主题整理的学习路径，同一分类内建议按顺序阅读。"
+    intro: "按主题整理的学习路径，同一分类内建议按顺序阅读，包含系统启动（从init进程启动到Launcher桌面显示整个过程）、通信机制（包括binder原理、handler机制等各种通信方式的原理、对比等）、系统服务（包括AMS、WMS、PKMS等个服务）、稳定性（JE、NE、ANR、SWT、重启、内存泄漏、OOM、死机、黑屏、不开机等问题的原理以及方法论）、四大组件（四大组件的原理、生命周期等）、进程管理（framework层的进程管理，包括adj的计算，lmkd的查杀逻辑））。"
 // <<<GUIDE-PAGE-END>>>
 };
 
-// 导读分类（guide.html 使用）：name 分类名，desc 简介，posts 为文章 id 列表，顺序即推荐阅读顺序
+// 导读分类（guide.html 使用）：name 分类名（纯文本），desc 简介（支持 Markdown，可内嵌 Base64 图片），posts 为文章 id 列表，顺序即推荐阅读顺序
 // 新文章写完后，把 id 加到合适的分类中即可；一篇文章可属于多个分类
 const guideCategories = [
 // <<<GUIDE-BEGIN>>>

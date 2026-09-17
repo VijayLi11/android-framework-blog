@@ -26,6 +26,14 @@
         return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    // 行内 Markdown 渲染（支持图片、链接、加粗等）；marked 不可用时回退为纯文本转义
+    function mdInline(s) {
+        if (typeof marked !== 'undefined' && marked.parseInline) {
+            return marked.parseInline(String(s));
+        }
+        return escapeAttr(s);
+    }
+
     function showToast(msg) {
         let toast = document.getElementById('guideToast');
         if (!toast) {
@@ -68,7 +76,7 @@
         }
 
         if (titleEl) titleEl.textContent = cfg.title;
-        if (introEl) introEl.textContent = cfg.intro;
+        if (introEl) introEl.innerHTML = mdInline(cfg.intro);
 
         container.innerHTML = guideCategories.map((cat, i) => {
             const items = cat.posts
@@ -87,7 +95,7 @@
             return `
             <div class="guide-cat">
                 <h2 class="guide-cat-title"><span class="guide-num">${i + 1}</span>${cat.name}</h2>
-                <p class="guide-cat-desc">${cat.desc}</p>
+                <p class="guide-cat-desc">${mdInline(cat.desc)}</p>
                 <div class="guide-items">${itemsHtml}</div>
             </div>`;
         }).join('');
@@ -115,12 +123,62 @@
                     <span class="guide-num">${i + 1}</span>
                     <input class="guide-edit-input guide-cat-name-input" data-index="${i}" value="${escapeAttr(cat.name)}" placeholder="分类大标题">
                 </h2>
-                <p class="guide-cat-desc">
-                    <input class="guide-edit-input guide-cat-desc-input" data-index="${i}" value="${escapeAttr(cat.desc)}" placeholder="内容概括">
-                </p>
+                <div class="guide-cat-desc">
+                    <textarea class="guide-edit-input guide-cat-desc-input" data-index="${i}" rows="2" placeholder="内容概括（支持 Markdown：图片 ![描述](url)、链接 [文字](url)、加粗 **文字** 等）">${escapeAttr(cat.desc)}</textarea>
+                    <div class="guide-desc-toolbar">
+                        <button class="guide-img-btn" data-index="${i}">🖼️ 插入图片</button>
+                        <span class="guide-desc-hint">支持 Markdown 语法，下方实时预览</span>
+                    </div>
+                    <div class="guide-desc-preview" data-index="${i}">${mdInline(cat.desc)}</div>
+                </div>
                 <div class="guide-items">${itemsHtml}</div>
             </div>`;
         }).join('');
+
+        // 绑定实时预览与插图按钮
+        container.querySelectorAll('.guide-cat-desc-input').forEach(ta => {
+            ta.addEventListener('input', () => updateDescPreview(ta));
+        });
+        container.querySelectorAll('.guide-img-btn').forEach(btn => {
+            btn.addEventListener('click', () => pickImageFor(btn.dataset.index));
+        });
+    }
+
+    function updateDescPreview(textarea) {
+        const preview = document.querySelector('.guide-desc-preview[data-index="' + textarea.dataset.index + '"]');
+        if (preview) preview.innerHTML = mdInline(textarea.value) || '<span style="opacity:0.5">（空）</span>';
+    }
+
+    // 选择图片 → 转 Base64 → 以 Markdown 语法插入到对应 textarea 光标处
+    function pickImageFor(index) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = () => {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            if (file.size > 500 * 1024) {
+                showToast('⚠️ 图片超过 500KB，Base64 内嵌会显著增大 posts.js，建议先压缩');
+            }
+            const reader = new FileReader();
+            reader.onload = () => {
+                const ta = document.querySelector('.guide-cat-desc-input[data-index="' + index + '"]');
+                if (!ta) return;
+                insertAtCursor(ta, `![${file.name.replace(/\.[^.]+$/, '')}](${reader.result})`);
+                updateDescPreview(ta);
+                showToast('🖼️ 图片已插入（Base64 内嵌）');
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
+    }
+
+    function insertAtCursor(textarea, text) {
+        const start = textarea.selectionStart || textarea.value.length;
+        const end = textarea.selectionEnd || start;
+        textarea.value = textarea.value.slice(0, start) + text + textarea.value.slice(end);
+        textarea.selectionStart = textarea.selectionEnd = start + text.length;
+        textarea.focus();
     }
 
     function renderEditBar() {

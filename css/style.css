@@ -1499,3 +1499,70 @@ button.tag-item {
     transform: translateY(0);
     opacity: 1;
 }
+
+/* 富文本概括：渲染后的图片/链接 */
+.guide-cat-desc img,
+.guide-intro img {
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+    vertical-align: middle;
+}
+
+.guide-cat-desc a,
+.guide-intro a {
+    color: var(--accent);
+}
+
+/* 编辑模式：多行概括输入 + 工具条 + 实时预览 */
+textarea.guide-edit-input {
+    resize: vertical;
+    line-height: 1.6;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+.guide-desc-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.guide-img-btn {
+    padding: 4px 12px;
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.guide-img-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.guide-desc-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.guide-desc-preview {
+    margin-top: 6px;
+    padding: 8px 12px;
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    word-break: break-all;
+}
+
+.guide-desc-preview img {
+    max-width: 200px;
+    max-height: 140px;
+    border-radius: var(--radius-sm);
+    vertical-align: middle;
+}
