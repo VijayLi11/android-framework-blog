@@ -889,7 +889,7 @@ adb shell input swipe 100 500 900 500 200</code></pre>
 const guidePageConfig = {
 // <<<GUIDE-PAGE-BEGIN>>>
     title: "导读",
-    intro: "按主题整理的学习路径，同一分类内建议按顺序阅读，包含系统启动（从init进程启动到Launcher桌面显示整个过程）、通信机制（包括binder原理、handler机制等各种通信方式的原理、对比等）、系统服务（包括AMS、WMS、PKMS等个服务）、稳定性（JE、NE、ANR、SWT、重启、内存泄漏、OOM、死机、黑屏、不开机等问题的原理以及方法论）、四大组件（四大组件的原理、生命周期等）、进程管理（framework层的进程管理，包括adj的计算，lmkd的查杀逻辑））。"
+    intro: "按主题整理的学习路径，同一分类内建议按顺序阅读，内容包含：\n1. 系统启动：\n    从init进程启动到Launcher桌面显示整个过程；\n2. 通信机制：\n    binder原理、handler机制等各种通信方式的原理、对比等；\n3：系统服务：\n    AMS、WMS、PKMS等个服务的原理；\n4. 稳定性：\n    JE、NE、ANR、SWT、重启、内存泄漏、OOM、死机、黑屏、不开机等问题的原理以及方法论；\n5. 四大组件：\n    四大组件的原理、生命周期等；\n6. 进程管理：\n    framework层的进程管理，包括adj的计算，lmkd的查杀逻辑。"
 // <<<GUIDE-PAGE-END>>>
 };
 

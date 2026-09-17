@@ -70,8 +70,28 @@
             if (titleEl) titleEl.innerHTML =
                 `<input class="guide-edit-input" id="editPageTitle" value="${escapeAttr(cfg.title)}" placeholder="页面标题">`;
             if (introEl) introEl.innerHTML =
-                `<input class="guide-edit-input" id="editPageIntro" value="${escapeAttr(cfg.intro)}" placeholder="页面介绍语">`;
+                `<textarea class="guide-edit-input" id="editPageIntro" rows="2" placeholder="页面介绍语（支持 Markdown：图片 ![描述](url)、链接 [文字](url)、加粗 **文字** 等）">${escapeAttr(cfg.intro)}</textarea>
+                 <div class="guide-desc-toolbar">
+                     <button class="guide-img-btn" id="introImgBtn">🖼️ 插入图片</button>
+                     <span class="guide-desc-hint">支持 Markdown 语法，下方实时预览</span>
+                 </div>
+                 <div class="guide-desc-preview" id="editPageIntroPreview">${mdInline(cfg.intro)}</div>`;
             renderEditMode(container);
+
+            // 介绍语的实时预览与插图按钮
+            const introTa = document.getElementById('editPageIntro');
+            if (introTa) {
+                introTa.addEventListener('input', () => {
+                    const pv = document.getElementById('editPageIntroPreview');
+                    if (pv) pv.innerHTML = mdInline(introTa.value) || '<span style="opacity:0.5">（空）</span>';
+                });
+                document.getElementById('introImgBtn').addEventListener('click', () => {
+                    pickImageForTextarea(introTa, () => {
+                        const pv = document.getElementById('editPageIntroPreview');
+                        if (pv) pv.innerHTML = mdInline(introTa.value);
+                    });
+                });
+            }
             return;
         }
 
@@ -151,6 +171,11 @@
 
     // 选择图片 → 转 Base64 → 以 Markdown 语法插入到对应 textarea 光标处
     function pickImageFor(index) {
+        const ta = document.querySelector('.guide-cat-desc-input[data-index="' + index + '"]');
+        if (ta) pickImageForTextarea(ta, () => updateDescPreview(ta));
+    }
+
+    function pickImageForTextarea(ta, afterInsert) {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
@@ -162,10 +187,8 @@
             }
             const reader = new FileReader();
             reader.onload = () => {
-                const ta = document.querySelector('.guide-cat-desc-input[data-index="' + index + '"]');
-                if (!ta) return;
                 insertAtCursor(ta, `![${file.name.replace(/\.[^.]+$/, '')}](${reader.result})`);
-                updateDescPreview(ta);
+                if (afterInsert) afterInsert();
                 showToast('🖼️ 图片已插入（Base64 内嵌）');
             };
             reader.readAsDataURL(file);
