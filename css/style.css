@@ -1408,3 +1408,94 @@ button.tag-item {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* ===== 导读页就地编辑（仅本地环境显示入口） ===== */
+.guide-edit-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin: 4px 0 16px;
+}
+
+.guide-edit-btn {
+    padding: 8px 16px;
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.guide-edit-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.guide-edit-save {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.guide-edit-input {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.guide-edit-input:focus {
+    box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.guide-cat-title .guide-edit-input {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+#guideTitle .guide-edit-input {
+    display: inline-block;
+    width: 60%;
+    min-width: 240px;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.guide-item-readonly {
+    cursor: default;
+    opacity: 0.75;
+}
+
+.guide-item-readonly:hover {
+    border-color: var(--border-color);
+    transform: none;
+}
+
+.guide-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 14px 24px;
+    background: var(--accent);
+    color: var(--bg-primary);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.guide-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}

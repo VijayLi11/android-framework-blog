@@ -884,6 +884,15 @@ adb shell input swipe 100 500 900 500 200</code></pre>
 // <<<POSTS-END>>>
 ];
 
+// 导读页面配置（guide.html 使用）：title 页面标题，intro 标题下的介绍语
+// 可在 guide.html 页面（本地打开）点击「编辑导读」就地修改
+const guidePageConfig = {
+// <<<GUIDE-PAGE-BEGIN>>>
+    title: "导读",
+    intro: "按主题整理的学习路径，同一分类内建议按顺序阅读。"
+// <<<GUIDE-PAGE-END>>>
+};
+
 // 导读分类（guide.html 使用）：name 分类名，desc 简介，posts 为文章 id 列表，顺序即推荐阅读顺序
 // 新文章写完后，把 id 加到合适的分类中即可；一篇文章可属于多个分类
 const guideCategories = [
