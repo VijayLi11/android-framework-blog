@@ -1572,3 +1572,81 @@ textarea.guide-edit-input {
     border-radius: var(--radius-sm);
     vertical-align: middle;
 }
+
+/* ===== 关于页就地编辑（仅本地环境显示入口） ===== */
+.about-title,
+.skill-item p,
+.timeline-content p {
+    white-space: pre-wrap; /* 保留输入的空格与换行 */
+}
+
+.about-avatar-input {
+    width: 64px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: transparent;
+}
+
+.about-name-input {
+    width: 60%;
+    min-width: 240px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+#aboutTitle .guide-edit-input {
+    text-align: center;
+    width: 80%;
+    min-width: 260px;
+}
+
+.about-social-edit {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.about-social-edit:empty {
+    display: none;
+}
+
+.about-edit-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.skill-item .guide-edit-input {
+    margin-bottom: 6px;
+}
+
+.skill-item .about-skill-icon {
+    width: 64px;
+    text-align: center;
+}
+
+.about-tag-edit-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+select.about-tag-level {
+    padding: 8px 10px;
+    background: var(--bg-primary);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    outline: none;
+}
+
+.timeline-content .guide-edit-input {
+    margin-bottom: 6px;
+}
