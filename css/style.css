@@ -1501,6 +1501,12 @@ button.tag-item {
 }
 
 /* 富文本概括：渲染后的图片/链接 */
+.guide-intro,
+.guide-cat-desc,
+.guide-desc-preview {
+    white-space: pre-wrap; /* 保留用户输入的空格与换行 */
+}
+
 .guide-cat-desc img,
 .guide-intro img {
     max-width: 100%;
