@@ -942,14 +942,14 @@ const aboutConfig = {
 // <<<ABOUT-BEGIN>>>
     avatar: "FW",
     name: "Framework Engineer",
-    title: "Android 系统开发工程师 · 稳定性 & framework工程师",
+    title: "Android 系统开发工程师 · 系统稳定性 & framework工程师",
     github: "https://github.com",
     email: "1464592821@qq.com",
     skills: [
-        { icon: "🛡️", title: "系统稳定性", desc: "ANR / Crash / Watchdog / Tombstone 分析，系统级异常监控与防护机制设计" },
-        { icon: "🏗️", title: "Framework 源码", desc: "AMS / WMS / Input / Binder 机制深度分析，系统服务定制与优化" },
-        { icon: "⚡", title: "性能优化", desc: "启动速度 / 内存优化 / 卡顿治理 / Systrace / Perfetto 深度剖析" },
-        { icon: "🔧", title: "系统定制", desc: "AOSP 编译 / 系统裁剪 / ROM 开发 / 车载/IoT 系统适配" }
+        { icon: "🛡️", title: "系统稳定性", desc: "JE / NE / ANR / SWT / 死机 / 重启 / 内存泄漏 / 内存溢出 / 定屏 / 花屏等，异常监控与防护机制设计" },
+        { icon: "🏗️", title: "Framework 源码", desc: "系统启动 / 通信机制（Binder原理、Handler机制等） / AMS / WMS / PKMS / Input / 四大组件 / 进程管理 / LMKD等" },
+        { icon: "⚡", title: "性能优化", desc: "启动速度 / 内存优化 / 卡顿治理 / Perfetto 深度剖析" },
+        { icon: "✨", title: "系统应用", desc: "Settings/Launcher/SystemUI" }
     ],
     techTags: [
         { name: "Android Framework", level: "expert" },
@@ -958,11 +958,8 @@ const aboutConfig = {
         { name: "AOSP", level: "expert" },
         { name: "Kotlin", level: "proficient" },
         { name: "Binder", level: "proficient" },
-        { name: "HAL", level: "proficient" },
-        { name: "Perfetto", level: "proficient" },
-        { name: "Rust", level: "familiar" },
-        { name: "Linux Kernel", level: "familiar" },
-        { name: "LLVM", level: "familiar" }
+        { name: "Perfetto", level: "familiar" },
+        { name: "系统稳定性", level: "familiar" }
     ],
     timeline: [
         { date: "2023 - 至今", title: "高级 Android 系统工程师", desc: "负责车载 Android 系统稳定性体系建设，主导 ANR/Crash 监控平台开发，系统服务性能优化" },
